@@ -1,5 +1,6 @@
 package software.mys.guardaditoapp
 
+import android.content.Intent
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
@@ -21,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -31,7 +33,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 @Preview
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBar(topBarViewModel: TopBarViewModel = viewModel()) {
+fun TopBar(topBarViewModel: TopBarViewModel = viewModel(), onClickLogOut: () -> Unit = {}) {
 
     val topBarUiState by topBarViewModel.uiState.collectAsState()
 
@@ -45,7 +47,7 @@ fun TopBar(topBarViewModel: TopBarViewModel = viewModel()) {
         title = {
             Column {
                 Text(
-                    "Welcome ${topBarUiState.userSesion.name}!",
+                    "Welcome ${topBarUiState.userSesion?.name}!",
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -65,7 +67,11 @@ fun TopBar(topBarViewModel: TopBarViewModel = viewModel()) {
             }
         },
         actions = {
-            IconButton(onClick = { /* do something */ }) {
+            IconButton(onClick = {
+                topBarViewModel.logout {
+                    onClickLogOut()
+                }
+            }) {
 
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ExitToApp,

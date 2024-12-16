@@ -1,5 +1,7 @@
 package software.mys.guardaditoapp
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -7,10 +9,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import software.mys.guardaditoapp.auth.ui.AuthActivity
 import software.mys.guardaditoapp.ui.theme.GuardaditoAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -21,7 +21,20 @@ class MainActivity : ComponentActivity() {
             GuardaditoAppTheme {
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
-                    topBar = { TopBar() }
+                    topBar = {
+                        TopBar(
+                            onClickLogOut = {
+                                startActivity(
+                                    Intent(
+                                        applicationContext,
+                                        AuthActivity::class.java
+                                    ).apply {
+                                        flags =
+                                            Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                    })
+                            }
+                        )
+                    }
                 ) { innerPadding ->
                     HomeScreen(modifier = Modifier.padding(innerPadding))
                 }
