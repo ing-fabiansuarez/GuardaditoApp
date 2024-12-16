@@ -1,6 +1,5 @@
-package software.mys.guardaditoapp
+package software.mys.guardaditoapp.ui.activity
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -10,7 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
-import software.mys.guardaditoapp.auth.ui.AuthActivity
+import software.mys.guardaditoapp.ui.screen.HomeScreen
+import software.mys.guardaditoapp.ui.screen.TopBar
 import software.mys.guardaditoapp.ui.theme.GuardaditoAppTheme
 
 class MainActivity : ComponentActivity() {

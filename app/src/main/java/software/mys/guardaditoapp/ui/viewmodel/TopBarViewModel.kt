@@ -1,10 +1,11 @@
-package software.mys.guardaditoapp
+package software.mys.guardaditoapp.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import software.mys.guardaditoapp.data.model.User
 
 
 data class TopBarUiState(

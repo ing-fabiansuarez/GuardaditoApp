@@ -10,12 +10,13 @@
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:name=".GuardaditoApplication"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.GuardaditoApp"
         tools:targetApi="31">
         <activity
-            android:name=".auth.ui.AuthActivity"
+            android:name=".ui.activity.AuthActivity"
             android:exported="true"
             android:label="@string/title_activity_auth"
             android:theme="@style/Theme.GuardaditoApp" >
@@ -26,7 +27,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.activity.MainActivity"
             android:exported="false"
             android:label="@string/app_name"
             android:theme="@style/Theme.GuardaditoApp">

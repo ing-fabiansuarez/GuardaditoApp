@@ -1,4 +1,4 @@
-package software.mys.guardaditoapp.auth.ui
+package software.mys.guardaditoapp.ui.activity
 
 import android.content.Intent
 import android.os.Bundle
@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import com.google.firebase.auth.FirebaseAuth
-import software.mys.guardaditoapp.MainActivity
+import software.mys.guardaditoapp.ui.screen.LoginScreen
 import software.mys.guardaditoapp.ui.theme.GuardaditoAppTheme
 
 class AuthActivity : ComponentActivity() {

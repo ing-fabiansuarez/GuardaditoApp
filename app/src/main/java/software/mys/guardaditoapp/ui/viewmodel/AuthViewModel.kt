@@ -1,4 +1,4 @@
-package software.mys.guardaditoapp.auth.ui
+package software.mys.guardaditoapp.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.ktx.auth

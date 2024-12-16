@@ -1,4 +1,4 @@
-package software.mys.guardaditoapp
+package software.mys.guardaditoapp.ui.screen
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier

@@ -1,4 +1,4 @@
-package software.mys.guardaditoapp.auth.ui
+package software.mys.guardaditoapp.ui.screen
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -25,6 +25,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import software.mys.guardaditoapp.ui.viewmodel.AuthViewModel
 
 
 @Composable
