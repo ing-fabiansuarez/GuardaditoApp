@@ -1,10 +1,16 @@
 package software.mys.guardaditoapp.data.repository
 
-interface AccountRepository {
+import software.mys.guardaditoapp.data.network.FireBaseRealTimeService
 
+interface AccountRepository {
+    suspend fun addAccount():String
 }
 
-class FirebaseRealTimeAccountRepository : AccountRepository {
-
+class DefaultAccountRepository(
+    private val accountRealTimeService: FireBaseRealTimeService
+) : AccountRepository {
+    override suspend fun addAccount(): String {
+        TODO("Not yet implemented")
+    }
 }
 

@@ -1,4 +1,4 @@
-package software.mys.guardaditoapp.data.model
+package software.mys.guardaditoapp.model
 
 data class User (
     val name:String,

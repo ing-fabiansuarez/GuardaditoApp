@@ -9,14 +9,21 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
+import dagger.hilt.android.AndroidEntryPoint
+import software.mys.guardaditoapp.data.repository.AccountRepository
+import software.mys.guardaditoapp.data.repository.DefaultAccountRepository
+import software.mys.guardaditoapp.model.Account
 import software.mys.guardaditoapp.ui.screen.HomeScreen
 import software.mys.guardaditoapp.ui.screen.TopBar
 import software.mys.guardaditoapp.ui.theme.GuardaditoAppTheme
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        
         setContent {
             GuardaditoAppTheme {
                 Scaffold(

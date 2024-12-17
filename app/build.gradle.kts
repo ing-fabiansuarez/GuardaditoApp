@@ -3,6 +3,11 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.gms.google.services)
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.1.0"
+
+    //inyeccion de dependencias!!!
+    id("kotlin-kapt")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -68,4 +73,21 @@ dependencies {
 
     //viewModel
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+
+    //retrofit
+    implementation(libs.retrofit)
+
+    //Serializacion Kotlin
+    implementation(libs.kotlinx.serialization.json)
+
+    // Retrofit with Scalar Converter
+    implementation(libs.converter.scalars)
+
+    //inyeccion de dependencias
+    implementation("com.google.dagger:hilt-android:2.51.1")
+    kapt("com.google.dagger:hilt-android-compiler:2.51.1")
+}
+
+kapt {
+    correctErrorTypes = true
 }
