@@ -8,7 +8,6 @@ import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import software.mys.guardaditoapp.GuardaditoApplication
 import software.mys.guardaditoapp.data.repository.AccountRepository
 import software.mys.guardaditoapp.model.User
 
