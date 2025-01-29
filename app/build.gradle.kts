@@ -4,8 +4,6 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.gms.google.services)
     id("org.jetbrains.kotlin.plugin.serialization") version "2.1.0"
-
-
 }
 
 android {
@@ -81,7 +79,7 @@ dependencies {
     // Retrofit with Scalar Converter
     implementation(libs.converter.scalars)
     //REtrofit GsonConverter, es mejor
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation(libs.converter.gson)
 
 
 }
