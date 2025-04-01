@@ -14,29 +14,25 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBalance
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.AirplanemodeActive
-import androidx.compose.material.icons.filled.CardGiftcard
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Description
-import androidx.compose.material.icons.filled.DirectionsBus
-import androidx.compose.material.icons.filled.FoodBank
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Money
-import androidx.compose.material.icons.filled.School
-import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,33 +45,112 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import software.mys.guardaditoapp.ui.viewmodel.CategoryViewModel
 
 
 @Preview
 @Composable
-fun CategoryScreen() {
+fun CategoryScreen(viewmodel: CategoryViewModel = CategoryViewModel()) {
+    val uiState by viewmodel.uiState.collectAsState()
+    var showDialog by remember { mutableStateOf(false) }
     Scaffold(
         topBar = { TopApp() },
         content = { innerPadding ->
-            TabsExpenseAndIncome(modifier = Modifier.padding(innerPadding))
+            TabsExpenseAndIncome(
+                modifier = Modifier.padding(innerPadding),
+                incomeCategories = uiState.incomeCategories, expenseCategories = uiState.expenseCategories
+            )
         },
         floatingActionButton = {
-            FloatingButton()
+            FloatingButton(onClick = { showDialog = true })
         }
     )
+
+    // Mostrar el diálogo si showDialog es true
+    if (showDialog) {
+        FullScreenDialog(
+            onDismiss = { showDialog = false } // Cerrar el diálogo
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun FullScreenDialog(onDismiss: () -> Unit) {
+    
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false) // Diálogo de pantalla completa
+    ) {
+        Surface(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            shape = MaterialTheme.shapes.large
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+            ) {
+                // Título del diálogo
+                Text(
+                    text = "Nueva Categoría",
+                    style = MaterialTheme.typography.headlineMedium,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+
+                // Campo de texto para el nombre de la categoría
+                var categoryName by remember { mutableStateOf("") }
+                OutlinedTextField(
+                    value = categoryName,
+                    onValueChange = { categoryName = it },
+                    label = { Text("Nombre de la categoría") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp)
+                )
+
+                // Botón para guardar la categoría
+                Button(
+                    onClick = {
+                        // Aquí puedes guardar la categoría
+                        onDismiss() // Cerrar el diálogo después de guardar
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Guardar")
+                }
+
+                // Botón para cancelar
+                TextButton(
+                    onClick = onDismiss,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Cancelar")
+                }
+            }
+        }
+    }
 }
 
 @Composable
-fun FloatingButton() {
+fun FloatingButton(onClick: () -> Unit) {
     FloatingActionButton(
-        onClick = {  },
+        onClick = onClick,
     ) {
         Icon(Icons.Filled.Add, "Floating action button.")
     }
 }
 
 @Composable
-fun TabsExpenseAndIncome(modifier: Modifier) {
+fun TabsExpenseAndIncome(
+    modifier: Modifier,
+    incomeCategories: List<Category> = listOf(),
+    expenseCategories: List<Category> = listOf()
+) {
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -163,48 +238,6 @@ fun CategoryItem(category: Category, onDelete: () -> Unit = {}) {
 }
 
 
-val expenseCategories = listOf(
-    // Categorías de gastos
-    Category("Alimentos", color = Color(0xFFFFA000), type = CategoryType.EXPENSE) { // Naranja
-        Icon(Icons.Filled.FoodBank, contentDescription = null)
-    },
-    Category("Facturas", color = Color(0xFF6A1B9A), type = CategoryType.EXPENSE) { // Púrpura
-        Icon(Icons.Filled.Description, contentDescription = null)
-    },
-    Category("Transporte", color = Color(0xFF0288D1), type = CategoryType.EXPENSE) { // Azul
-        Icon(Icons.Filled.DirectionsBus, contentDescription = null)
-    },
-    Category("Compras", color = Color(0xFFE91E63), type = CategoryType.EXPENSE) { // Rosa
-        Icon(Icons.Filled.ShoppingCart, contentDescription = null)
-    },
-    Category("Regalos", color = Color(0xFFE91E63), type = CategoryType.EXPENSE) { // Rosa
-        Icon(Icons.Filled.CardGiftcard, contentDescription = null)
-    },
-    Category(
-        "Educación",
-        color = Color(0xFF00796B),
-        type = CategoryType.EXPENSE
-    ) { // Verde oscuro
-        Icon(Icons.Filled.School, contentDescription = null)
-    },
-    Category("Renta", color = Color(0xFFF57C00), type = CategoryType.EXPENSE) { // Naranja
-        Icon(Icons.Filled.Home, contentDescription = null)
-    },
-    Category("Viajes", color = Color(0xFFE91E63), type = CategoryType.EXPENSE) { // Rosa
-        Icon(Icons.Filled.AirplanemodeActive, contentDescription = null)
-    },
-
-    )
-
-val incomeCategories = listOf(
-    // Nuevas categorías de ingresos
-    Category("Salario", color = Color(0xFF4CAF50), type = CategoryType.INCOME) { // Verde
-        Icon(Icons.Filled.Money, contentDescription = null)
-    },
-    Category("Inversiones", color = Color(0xFF3F51B5), type = CategoryType.INCOME) { // Azul
-        Icon(Icons.Filled.AccountBalance, contentDescription = null)
-    }
-)
 
 
 // Definimos un enum para los tipos de categorías.
