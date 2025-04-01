@@ -36,29 +36,15 @@ import software.mys.guardaditoapp.ui.theme.GuardaditoAppTheme
 
 @Composable
 fun HomeScreen() {
-    GuardaditoAppTheme {
-        Scaffold(modifier = Modifier.fillMaxSize(),
-            topBar = {
-                TopBar()
-            }
-        ) { innerPadding ->
-            Column(
-                modifier = Modifier
-                    .padding(innerPadding)
-                    .padding(8.dp)
-            ) {
-                BalanceCard()
-            }
-        }
+    Column(
+        modifier = Modifier
+            .padding(8.dp)
+    ) {
+        BalanceCard()
     }
-}
-
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TopBar() {
 
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

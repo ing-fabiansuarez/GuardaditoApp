@@ -55,18 +55,12 @@ import software.mys.guardaditoapp.ui.viewmodel.CategoryViewModel
 fun CategoryScreen(viewmodel: CategoryViewModel = CategoryViewModel()) {
     val uiState by viewmodel.uiState.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
-    Scaffold(
-        topBar = { TopApp() },
-        content = { innerPadding ->
-            TabsExpenseAndIncome(
-                modifier = Modifier.padding(innerPadding),
-                incomeCategories = uiState.incomeCategories, expenseCategories = uiState.expenseCategories
-            )
-        },
-        floatingActionButton = {
-            FloatingButton(onClick = { showDialog = true })
-        }
+
+    TabsExpenseAndIncome(
+        modifier = Modifier,
+        incomeCategories = uiState.incomeCategories, expenseCategories = uiState.expenseCategories
     )
+
 
     // Mostrar el diálogo si showDialog es true
     if (showDialog) {
@@ -79,7 +73,6 @@ fun CategoryScreen(viewmodel: CategoryViewModel = CategoryViewModel()) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FullScreenDialog(onDismiss: () -> Unit) {
-    
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false) // Diálogo de pantalla completa
@@ -236,8 +229,6 @@ fun CategoryItem(category: Category, onDelete: () -> Unit = {}) {
     }
     HorizontalDivider()
 }
-
-
 
 
 // Definimos un enum para los tipos de categorías.
