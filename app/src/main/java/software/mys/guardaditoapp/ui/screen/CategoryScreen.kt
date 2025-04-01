@@ -50,6 +50,15 @@ import androidx.compose.ui.window.DialogProperties
 import software.mys.guardaditoapp.ui.viewmodel.CategoryViewModel
 
 
+@Composable
+fun CategoryFAB() {
+    FloatingActionButton(
+        onClick = {},
+    ) {
+        Icon(Icons.Filled.Add, "Agregar Categoria.")
+    }
+}
+
 @Preview
 @Composable
 fun CategoryScreen(viewmodel: CategoryViewModel = CategoryViewModel()) {
