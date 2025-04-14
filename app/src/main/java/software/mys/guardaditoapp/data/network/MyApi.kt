@@ -13,12 +13,12 @@ private val retrofit = Retrofit.Builder()
     .build()
 
 object MyApi {
-    val retrofitService: FireBaseRealTimeApiService by lazy {
-        retrofit.create(FireBaseRealTimeApiService::class.java)
+    val retrofitService: ApiService by lazy {
+        retrofit.create(ApiService::class.java)
     }
 }
 
-interface FireBaseRealTimeApiService {
+interface ApiService {
 
 
 }

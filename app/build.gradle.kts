@@ -61,6 +61,12 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+
+    //librerias de retrofit
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
+
+    //librerias de ROOM
+    implementation(libs.androidx.room.runtime)
+    annotationProcessor(libs.androidx.room.compiler)
 }

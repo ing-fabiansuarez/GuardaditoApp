@@ -40,7 +40,6 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun AppScaffold(navController: NavHostController) {
-
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 

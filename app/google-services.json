@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "211979920103",
+    "firebase_url": "https://guardaditoapp-7eeb1-default-rtdb.firebaseio.com",
+    "project_id": "guardaditoapp-7eeb1",
+    "storage_bucket": "guardaditoapp-7eeb1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:211979920103:android:92575e5e58603c8dd7f842",
+        "android_client_info": {
+          "package_name": "software.mys.guardaditoapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD26z4G880SKcIgyuiEWIbw024fmyFGYxw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

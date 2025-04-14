@@ -1,0 +1,128 @@
+Index: app/src/main/java/software/mys/guardaditoapp/ui/screen/CategoryScreen.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package software.mys.guardaditoapp.ui.screen\r\n\r\nimport androidx.compose.foundation.background\r\nimport androidx.compose.foundation.clickable\r\nimport androidx.compose.foundation.layout.Arrangement\r\nimport androidx.compose.foundation.layout.Box\r\nimport androidx.compose.foundation.layout.Column\r\nimport androidx.compose.foundation.layout.Row\r\nimport androidx.compose.foundation.layout.Spacer\r\nimport androidx.compose.foundation.layout.fillMaxSize\r\nimport androidx.compose.foundation.layout.fillMaxWidth\r\nimport androidx.compose.foundation.layout.padding\r\nimport androidx.compose.foundation.layout.size\r\nimport androidx.compose.foundation.layout.width\r\nimport androidx.compose.foundation.shape.CircleShape\r\nimport androidx.compose.material.icons.Icons\r\nimport androidx.compose.material.icons.filled.Add\r\nimport androidx.compose.material.icons.filled.Delete\r\nimport androidx.compose.material3.Button\r\nimport androidx.compose.material3.ExperimentalMaterial3Api\r\nimport androidx.compose.material3.FloatingActionButton\r\nimport androidx.compose.material3.HorizontalDivider\r\nimport androidx.compose.material3.Icon\r\nimport androidx.compose.material3.IconButton\r\nimport androidx.compose.material3.MaterialTheme\r\nimport androidx.compose.material3.OutlinedTextField\r\nimport androidx.compose.material3.Scaffold\r\nimport androidx.compose.material3.Surface\r\nimport androidx.compose.material3.Tab\r\nimport androidx.compose.material3.TabRow\r\nimport androidx.compose.material3.Text\r\nimport androidx.compose.material3.TextButton\r\nimport androidx.compose.material3.TopAppBar\r\nimport androidx.compose.runtime.Composable\r\nimport androidx.compose.runtime.collectAsState\r\nimport androidx.compose.runtime.getValue\r\nimport androidx.compose.runtime.mutableStateOf\r\nimport androidx.compose.runtime.remember\r\nimport androidx.compose.runtime.setValue\r\nimport androidx.compose.ui.Alignment\r\nimport androidx.compose.ui.Modifier\r\nimport androidx.compose.ui.draw.clip\r\nimport androidx.compose.ui.graphics.Color\r\nimport androidx.compose.ui.text.font.FontWeight\r\nimport androidx.compose.ui.tooling.preview.Preview\r\nimport androidx.compose.ui.unit.dp\r\nimport androidx.compose.ui.unit.sp\r\nimport androidx.compose.ui.window.Dialog\r\nimport androidx.compose.ui.window.DialogProperties\r\nimport software.mys.guardaditoapp.ui.viewmodel.CategoryViewModel\r\n\r\n\r\n@Preview\r\n@Composable\r\nfun CategoryScreen(viewmodel: CategoryViewModel = CategoryViewModel()) {\r\n    val uiState by viewmodel.uiState.collectAsState()\r\n    var showDialog by remember { mutableStateOf(false) }\r\n\r\n    TabsExpenseAndIncome(\r\n        modifier = Modifier,\r\n        incomeCategories = uiState.incomeCategories, expenseCategories = uiState.expenseCategories\r\n    )\r\n\r\n\r\n    // Mostrar el diálogo si showDialog es true\r\n    if (showDialog) {\r\n        FullScreenDialog(\r\n            onDismiss = { showDialog = false } // Cerrar el diálogo\r\n        )\r\n    }\r\n}\r\n\r\n@OptIn(ExperimentalMaterial3Api::class)\r\n@Composable\r\nfun FullScreenDialog(onDismiss: () -> Unit) {\r\n    Dialog(\r\n        onDismissRequest = onDismiss,\r\n        properties = DialogProperties(usePlatformDefaultWidth = false) // Diálogo de pantalla completa\r\n    ) {\r\n        Surface(\r\n            modifier = Modifier\r\n                .fillMaxSize()\r\n                .padding(16.dp),\r\n            shape = MaterialTheme.shapes.large\r\n        ) {\r\n            Column(\r\n                modifier = Modifier\r\n                    .fillMaxSize()\r\n                    .padding(16.dp)\r\n            ) {\r\n                // Título del diálogo\r\n                Text(\r\n                    text = \"Nueva Categoría\",\r\n                    style = MaterialTheme.typography.headlineMedium,\r\n                    modifier = Modifier.padding(bottom = 16.dp)\r\n                )\r\n\r\n                // Campo de texto para el nombre de la categoría\r\n                var categoryName by remember { mutableStateOf(\"\") }\r\n                OutlinedTextField(\r\n                    value = categoryName,\r\n                    onValueChange = { categoryName = it },\r\n                    label = { Text(\"Nombre de la categoría\") },\r\n                    modifier = Modifier\r\n                        .fillMaxWidth()\r\n                        .padding(bottom = 16.dp)\r\n                )\r\n\r\n                // Botón para guardar la categoría\r\n                Button(\r\n                    onClick = {\r\n                        // Aquí puedes guardar la categoría\r\n                        onDismiss() // Cerrar el diálogo después de guardar\r\n                    },\r\n                    modifier = Modifier.fillMaxWidth()\r\n                ) {\r\n                    Text(\"Guardar\")\r\n                }\r\n\r\n                // Botón para cancelar\r\n                TextButton(\r\n                    onClick = onDismiss,\r\n                    modifier = Modifier.fillMaxWidth()\r\n                ) {\r\n                    Text(\"Cancelar\")\r\n                }\r\n            }\r\n        }\r\n    }\r\n}\r\n\r\n@Composable\r\nfun FloatingButton(onClick: () -> Unit) {\r\n    FloatingActionButton(\r\n        onClick = onClick,\r\n    ) {\r\n        Icon(Icons.Filled.Add, \"Floating action button.\")\r\n    }\r\n}\r\n\r\n@Composable\r\nfun TabsExpenseAndIncome(\r\n    modifier: Modifier,\r\n    incomeCategories: List<Category> = listOf(),\r\n    expenseCategories: List<Category> = listOf()\r\n) {\r\n    Column(\r\n        modifier = modifier\r\n            .fillMaxSize()\r\n            .background(Color.White)\r\n    ) {\r\n        var selectedTabIndex by remember { mutableStateOf(0) }\r\n\r\n        // Usamos el enum para definir las pestañas\r\n        val tabs = CategoryType.entries.toTypedArray()\r\n\r\n        Column(modifier = Modifier.fillMaxSize()) {\r\n            TabRow(selectedTabIndex = selectedTabIndex) {\r\n                tabs.forEachIndexed { index, categoryType ->\r\n                    Tab(\r\n                        selected = selectedTabIndex == index,\r\n                        onClick = { selectedTabIndex = index },\r\n                        text = { Text(text = categoryType.getTabName()) }\r\n                    )\r\n                }\r\n            }\r\n\r\n            when (tabs[selectedTabIndex]) {\r\n                CategoryType.INCOME -> {\r\n                    incomeCategories.forEach { category ->\r\n                        CategoryItem(category)\r\n                    }\r\n                }\r\n\r\n                CategoryType.EXPENSE -> {\r\n                    expenseCategories.forEach { category ->\r\n                        CategoryItem(category)\r\n                    }\r\n                }\r\n            }\r\n        }\r\n\r\n    }\r\n}\r\n\r\n@OptIn(ExperimentalMaterial3Api::class)\r\n@Composable\r\nfun TopApp() {\r\n    TopAppBar(\r\n        title = {\r\n            Text(\"Categories\", fontWeight = FontWeight.Bold)\r\n        }\r\n    )\r\n}\r\n\r\n@Composable\r\nfun CategoryItem(category: Category, onDelete: () -> Unit = {}) {\r\n    Row(\r\n        horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth(),\r\n        verticalAlignment = Alignment.CenterVertically\r\n    ) {\r\n        Row(\r\n            modifier = Modifier\r\n                .padding(16.dp),\r\n            verticalAlignment = Alignment.CenterVertically\r\n        ) {\r\n            Box(\r\n                modifier = Modifier\r\n                    .size(40.dp)\r\n                    .clip(CircleShape)\r\n                    .clickable { }\r\n                    .background(color = category.color) // Asigna el color aquí\r\n                ,\r\n                contentAlignment = Alignment.Center\r\n            ) {\r\n                category.icon()\r\n            }\r\n            Spacer(modifier = Modifier.width(16.dp))\r\n            Text(text = category.title, fontSize = 16.sp, fontWeight = FontWeight.Medium)\r\n\r\n        }\r\n        // Ícono de eliminar\r\n        IconButton(onClick = onDelete) {\r\n            Icon(\r\n                imageVector = Icons.Default.Delete, // Cambia esto por el ícono que desees usar\r\n                contentDescription = \"Eliminar categoría\"\r\n            )\r\n        }\r\n    }\r\n    HorizontalDivider()\r\n}\r\n\r\n\r\n// Definimos un enum para los tipos de categorías.\r\nenum class CategoryType {\r\n    INCOME, EXPENSE;\r\n\r\n    // Función para obtener el nombre de la pestaña\r\n    fun getTabName(): String {\r\n        return when (this) {\r\n            INCOME -> \"Ingresos\"\r\n            EXPENSE -> \"Gastos\"\r\n        }\r\n    }\r\n}\r\n\r\ndata class Category(\r\n    val title: String,\r\n    val color: Color = Color.Black,\r\n    val type: CategoryType,\r\n    val icon: @Composable () -> Unit\r\n)
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/software/mys/guardaditoapp/ui/screen/CategoryScreen.kt b/app/src/main/java/software/mys/guardaditoapp/ui/screen/CategoryScreen.kt
+--- a/app/src/main/java/software/mys/guardaditoapp/ui/screen/CategoryScreen.kt	(revision a6a5314efebb4e44a74d58d88debe90f8fd40a5d)
++++ b/app/src/main/java/software/mys/guardaditoapp/ui/screen/CategoryScreen.kt	(date 1743476677723)
+@@ -50,6 +50,15 @@
+ import software.mys.guardaditoapp.ui.viewmodel.CategoryViewModel
+ 
+ 
++@Composable
++fun CategoryFAB() {
++    FloatingActionButton(
++        onClick = {},
++    ) {
++        Icon(Icons.Filled.Add, "Agregar Categoria.")
++    }
++}
++
+ @Preview
+ @Composable
+ fun CategoryScreen(viewmodel: CategoryViewModel = CategoryViewModel()) {
+Index: app/src/main/java/software/mys/guardaditoapp/MainActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package software.mys.guardaditoapp\r\n\r\nimport android.os.Bundle\r\n\r\nimport androidx.activity.compose.setContent\r\n\r\nimport androidx.activity.ComponentActivity\r\nimport androidx.activity.enableEdgeToEdge\r\nimport androidx.compose.foundation.layout.fillMaxSize\r\nimport androidx.compose.foundation.layout.padding\r\nimport androidx.compose.material3.FloatingActionButton\r\nimport androidx.compose.material3.Scaffold\r\nimport androidx.compose.material3.Text\r\nimport androidx.navigation.NavHostController\r\nimport androidx.navigation.compose.NavHost\r\nimport androidx.navigation.compose.rememberNavController\r\nimport software.mys.guardaditoapp.ui.screen.CategoryScreen\r\nimport androidx.compose.runtime.Composable\r\nimport androidx.compose.runtime.getValue\r\nimport androidx.compose.runtime.mutableIntStateOf\r\nimport androidx.compose.runtime.remember\r\nimport androidx.compose.runtime.setValue\r\nimport androidx.compose.ui.Modifier\r\nimport androidx.compose.ui.graphics.Color\r\nimport androidx.compose.ui.graphics.vector.ImageVector\r\nimport androidx.navigation.NavDestination.Companion.hierarchy\r\nimport androidx.navigation.NavGraph.Companion.findStartDestination\r\nimport androidx.navigation.compose.composable\r\nimport androidx.navigation.compose.currentBackStackEntryAsState\r\n\r\nimport software.mys.guardaditoapp.ui.screen.HomeScreen\r\nimport software.mys.guardaditoapp.ui.theme.GuardaditoAppTheme\r\n\r\n\r\nclass MainActivity : ComponentActivity() {\r\n    override fun onCreate(savedInstanceState: Bundle?) {\r\n        super.onCreate(savedInstanceState)\r\n        enableEdgeToEdge()\r\n        setContent {\r\n            GuardaditoAppTheme {\r\n                val navController = rememberNavController()\r\n                AppScaffold(navController)\r\n            }\r\n        }\r\n    }\r\n}\r\n\r\n@Composable\r\nfun AppScaffold(navController: NavHostController) {\r\n\r\n    val navBackStackEntry by navController.currentBackStackEntryAsState()\r\n    val currentDestination = navBackStackEntry?.destination\r\n\r\n    Scaffold(modifier = Modifier.fillMaxSize(),\r\n        topBar = {\r\n        },\r\n        bottomBar = { NavigationBottomAppBar(navController) }\r\n    ) { innerPadding ->\r\n        NavHost(\r\n            navController = navController,\r\n            startDestination = Routes.Home.route,\r\n            modifier = Modifier.padding(innerPadding)\r\n        ) {\r\n            composable(route = Routes.Home.route) {\r\n                HomeScreen()\r\n            }\r\n            composable(route = Routes.Categories.route) {\r\n                CategoryScreen()\r\n            }\r\n        }\r\n    }\r\n\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/software/mys/guardaditoapp/MainActivity.kt b/app/src/main/java/software/mys/guardaditoapp/MainActivity.kt
+--- a/app/src/main/java/software/mys/guardaditoapp/MainActivity.kt	(revision a6a5314efebb4e44a74d58d88debe90f8fd40a5d)
++++ b/app/src/main/java/software/mys/guardaditoapp/MainActivity.kt	(date 1743544038759)
+@@ -8,25 +8,18 @@
+ import androidx.activity.enableEdgeToEdge
+ import androidx.compose.foundation.layout.fillMaxSize
+ import androidx.compose.foundation.layout.padding
+-import androidx.compose.material3.FloatingActionButton
+ import androidx.compose.material3.Scaffold
+-import androidx.compose.material3.Text
+ import androidx.navigation.NavHostController
+ import androidx.navigation.compose.NavHost
+ import androidx.navigation.compose.rememberNavController
+ import software.mys.guardaditoapp.ui.screen.CategoryScreen
+ import androidx.compose.runtime.Composable
+ import androidx.compose.runtime.getValue
+-import androidx.compose.runtime.mutableIntStateOf
+-import androidx.compose.runtime.remember
+-import androidx.compose.runtime.setValue
+ import androidx.compose.ui.Modifier
+-import androidx.compose.ui.graphics.Color
+-import androidx.compose.ui.graphics.vector.ImageVector
+-import androidx.navigation.NavDestination.Companion.hierarchy
+-import androidx.navigation.NavGraph.Companion.findStartDestination
+ import androidx.navigation.compose.composable
+ import androidx.navigation.compose.currentBackStackEntryAsState
++import software.mys.guardaditoapp.ui.screen.CategoryFAB
++import software.mys.guardaditoapp.ui.screen.HomeFAB
+ 
+ import software.mys.guardaditoapp.ui.screen.HomeScreen
+ import software.mys.guardaditoapp.ui.theme.GuardaditoAppTheme
+@@ -53,6 +46,13 @@
+ 
+     Scaffold(modifier = Modifier.fillMaxSize(),
+         topBar = {
++
++        },
++        floatingActionButton = {
++            when(currentDestination?.route) {
++                Routes.Home.route -> HomeFAB()
++                Routes.Categories.route -> CategoryFAB()
++            }
+         },
+         bottomBar = { NavigationBottomAppBar(navController) }
+     ) { innerPadding ->
+@@ -71,3 +71,6 @@
+     }
+ 
+ }
++
++
++
+Index: app/src/main/java/software/mys/guardaditoapp/ui/screen/HomeScreen.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package software.mys.guardaditoapp.ui.screen\r\n\r\nimport androidx.compose.foundation.background\r\nimport androidx.compose.foundation.layout.Arrangement\r\nimport androidx.compose.foundation.layout.Column\r\nimport androidx.compose.foundation.layout.Row\r\nimport androidx.compose.foundation.layout.Spacer\r\nimport androidx.compose.foundation.layout.fillMaxSize\r\nimport androidx.compose.foundation.layout.fillMaxWidth\r\nimport androidx.compose.foundation.layout.height\r\nimport androidx.compose.foundation.layout.padding\r\nimport androidx.compose.foundation.layout.width\r\nimport androidx.compose.foundation.shape.RoundedCornerShape\r\nimport androidx.compose.material.icons.Icons\r\nimport androidx.compose.material.icons.filled.AccountBalanceWallet\r\nimport androidx.compose.material.icons.filled.ArrowDownward\r\nimport androidx.compose.material.icons.filled.ArrowUpward\r\nimport androidx.compose.material.icons.filled.Balance\r\nimport androidx.compose.material.icons.filled.Visibility\r\nimport androidx.compose.material3.Button\r\nimport androidx.compose.material3.Card\r\nimport androidx.compose.material3.ExperimentalMaterial3Api\r\nimport androidx.compose.material3.Icon\r\nimport androidx.compose.material3.Scaffold\r\nimport androidx.compose.material3.Text\r\nimport androidx.compose.runtime.Composable\r\nimport androidx.compose.ui.Alignment\r\nimport androidx.compose.ui.Modifier\r\nimport androidx.compose.ui.graphics.Color\r\nimport androidx.compose.ui.graphics.vector.ImageVector\r\nimport androidx.compose.ui.text.font.FontWeight\r\nimport androidx.compose.ui.unit.dp\r\nimport androidx.compose.ui.unit.sp\r\nimport software.mys.guardaditoapp.ui.theme.GuardaditoAppTheme\r\n\r\n\r\n@Composable\r\nfun HomeScreen() {\r\n    Column(\r\n        modifier = Modifier\r\n            .padding(8.dp)\r\n    ) {\r\n        BalanceCard()\r\n    }\r\n\r\n}\r\n\r\n\r\n@OptIn(ExperimentalMaterial3Api::class)\r\n@Composable\r\nfun BalanceCard() {\r\n    Card(\r\n        modifier = Modifier\r\n            .padding(16.dp)\r\n            .fillMaxWidth(),\r\n        shape = RoundedCornerShape(16.dp)\r\n    ) {\r\n        Column(modifier = Modifier.padding(16.dp)) {\r\n            Row(\r\n                modifier = Modifier.fillMaxWidth(),\r\n                horizontalArrangement = Arrangement.SpaceBetween,\r\n                verticalAlignment = Alignment.CenterVertically\r\n            ) {\r\n                Column {\r\n                    Text(\"Saldo total\", color = Color.Gray)\r\n                    Text(\"$50.000,00\", fontSize = 28.sp, fontWeight = FontWeight.Bold)\r\n                }\r\n                Icon(Icons.Filled.Visibility, contentDescription = null, tint = Color.Gray)\r\n            }\r\n            Spacer(modifier = Modifier.height(16.dp))\r\n            Column(\r\n                modifier = Modifier\r\n                    .background(Color(0xFFF0F0F0), shape = RoundedCornerShape(8.dp))\r\n                    .padding(16.dp)\r\n            ) {\r\n                BalanceItem(\r\n                    icon = Icons.Default.ArrowUpward,\r\n                    label = \"Ingresos\",\r\n                    amount = \"$0,00\",\r\n                    color = Color.Green\r\n                )\r\n                BalanceItem(\r\n                    icon = Icons.Default.ArrowDownward,\r\n                    label = \"Gastos\",\r\n                    amount = \"$0,00\",\r\n                    color = Color.Red\r\n                )\r\n                BalanceItem(\r\n                    icon = Icons.Default.Balance,\r\n                    label = \"Balance\",\r\n                    amount = \"$0,00\",\r\n                    color = Color.Gray\r\n                )\r\n            }\r\n            Spacer(modifier = Modifier.height(16.dp))\r\n            Button(\r\n                onClick = { /*TODO*/ },\r\n                modifier = Modifier.fillMaxWidth(),\r\n                shape = RoundedCornerShape(50)\r\n            ) {\r\n                Icon(Icons.Filled.AccountBalanceWallet, contentDescription = null)\r\n                Spacer(modifier = Modifier.width(8.dp))\r\n                Text(\"Gestionar cuentas\")\r\n            }\r\n        }\r\n    }\r\n}\r\n\r\n@OptIn(ExperimentalMaterial3Api::class)\r\n@Composable\r\nfun BalanceItem(icon: ImageVector, label: String, amount: String, color: Color) {\r\n    Row(\r\n        modifier = Modifier\r\n            .fillMaxWidth()\r\n            .padding(vertical = 4.dp),\r\n        horizontalArrangement = Arrangement.SpaceBetween,\r\n        verticalAlignment = Alignment.CenterVertically\r\n    ) {\r\n        Row(verticalAlignment = Alignment.CenterVertically) {\r\n            Icon(icon, contentDescription = null, tint = color)\r\n            Spacer(modifier = Modifier.width(8.dp))\r\n            Text(label)\r\n        }\r\n        Text(amount, color = color)\r\n    }\r\n}\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/software/mys/guardaditoapp/ui/screen/HomeScreen.kt b/app/src/main/java/software/mys/guardaditoapp/ui/screen/HomeScreen.kt
+--- a/app/src/main/java/software/mys/guardaditoapp/ui/screen/HomeScreen.kt	(revision a6a5314efebb4e44a74d58d88debe90f8fd40a5d)
++++ b/app/src/main/java/software/mys/guardaditoapp/ui/screen/HomeScreen.kt	(date 1743476575055)
+@@ -13,6 +13,7 @@
+ import androidx.compose.foundation.shape.RoundedCornerShape
+ import androidx.compose.material.icons.Icons
+ import androidx.compose.material.icons.filled.AccountBalanceWallet
++import androidx.compose.material.icons.filled.Add
+ import androidx.compose.material.icons.filled.ArrowDownward
+ import androidx.compose.material.icons.filled.ArrowUpward
+ import androidx.compose.material.icons.filled.Balance
+@@ -20,6 +21,7 @@
+ import androidx.compose.material3.Button
+ import androidx.compose.material3.Card
+ import androidx.compose.material3.ExperimentalMaterial3Api
++import androidx.compose.material3.ExtendedFloatingActionButton
+ import androidx.compose.material3.Icon
+ import androidx.compose.material3.Scaffold
+ import androidx.compose.material3.Text
+@@ -34,6 +36,16 @@
+ import software.mys.guardaditoapp.ui.theme.GuardaditoAppTheme
+ 
+ 
++@Composable
++fun HomeFAB() {
++    ExtendedFloatingActionButton(
++        onClick = { },
++        icon = { Icon(Icons.Filled.Add, "Agregar Transacción") },
++        text = { Text(text = "Agregar Transacción") },
++    )
++}
++
++
+ @Composable
+ fun HomeScreen() {
+     Column(
