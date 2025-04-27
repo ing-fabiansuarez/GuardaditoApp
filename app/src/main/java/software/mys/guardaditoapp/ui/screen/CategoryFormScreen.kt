@@ -39,7 +39,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import software.mys.guardaditoapp.ui.viewmodel.CategoryFormViewModel
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
 import software.mys.guardaditoapp.ui.models.CategoryUiType
+import software.mys.guardaditoapp.ui.models.availableIcons
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -142,6 +144,37 @@ fun CategoryFormScreen(
                                 )
                                 .clickable { viewModel.setColor(colorValue) }
                         )
+                    }
+                }
+
+                Text("Icono", style = MaterialTheme.typography.bodyMedium)
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    availableIcons.forEach { icon ->
+                        Box(
+                            modifier = Modifier
+                                .size(48.dp)
+                                .clip(CircleShape)
+                                .background(MaterialTheme.colorScheme.surface)
+                                .border(
+                                    width = if (icon == uiState.selectedIcon) 2.dp else 1.dp,
+                                    color = if (icon == uiState.selectedIcon)
+                                        MaterialTheme.colorScheme.primary
+                                    else MaterialTheme.colorScheme.outline,
+                                    shape = CircleShape
+                                )
+                                .clickable { viewModel.setIcon(icon) },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = icon,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
                     }
                 }
 

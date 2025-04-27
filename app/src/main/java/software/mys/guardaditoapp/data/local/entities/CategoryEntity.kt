@@ -14,10 +14,10 @@ import software.mys.guardaditoapp.ui.models.CategoryUiType
 data class CategoryEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val name: String,
-    val type: CategoryEntityType, // INCOME or EXPENSE
-    val color: Long // Color en formato ARGB
+    val type: CategoryEntityType,
+    val color: Long, // Color en formato ARGB
+    val iconName: String // Nuevo campo para el icono
 )
-
 // Extensión mejorada para convertir CategoryEntity a CategoryUi
 fun CategoryEntity.toCategoryUi(): CategoryUi {
     return CategoryUi(
@@ -27,13 +27,6 @@ fun CategoryEntity.toCategoryUi(): CategoryUi {
             CategoryEntityType.INCOME -> CategoryUiType.INCOME
             CategoryEntityType.EXPENSE -> CategoryUiType.EXPENSE
         },
-        icon = {
-            val iconVector = when(this.type) {
-                CategoryEntityType.INCOME -> Icons.Default.ArrowUpward
-                CategoryEntityType.EXPENSE -> Icons.Default.ArrowDownward
-            }
-            Icon(imageVector = iconVector, contentDescription = null)
-        }
     )
 }
 enum class CategoryEntityType {

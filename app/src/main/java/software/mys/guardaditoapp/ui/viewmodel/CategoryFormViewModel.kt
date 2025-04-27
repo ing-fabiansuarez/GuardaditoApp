@@ -1,6 +1,8 @@
 package software.mys.guardaditoapp.ui.viewmodel
 
 import android.app.Application
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Category
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
@@ -10,8 +12,8 @@ import software.mys.guardaditoapp.data.local.AppDatabase
 import software.mys.guardaditoapp.data.repositories.CategoryRepository
 import software.mys.guardaditoapp.ui.models.CategoryUi
 import software.mys.guardaditoapp.ui.models.CategoryUiType
-import software.mys.guardaditoapp.ui.models.toEntity
 import androidx.compose.runtime.State
+import androidx.compose.ui.graphics.vector.ImageVector
 
 // ui/viewmodel/CategoryFormViewModel.kt
 class CategoryFormViewModel(application: Application) : AndroidViewModel(application) {
@@ -26,6 +28,10 @@ class CategoryFormViewModel(application: Application) : AndroidViewModel(applica
 
     fun setName(name: String) {
         _uiState.value = _uiState.value.copy(name = name)
+    }
+
+    fun setIcon(icon: ImageVector) {
+        _uiState.value = _uiState.value.copy(selectedIcon = icon)
     }
 
     fun setType(type: CategoryUiType) {
@@ -67,7 +73,8 @@ class CategoryFormViewModel(application: Application) : AndroidViewModel(applica
 data class CategoryFormState(
     val name: String = "",
     val selectedType: CategoryUiType = CategoryUiType.EXPENSE,
-    val selectedColor: Long = 0xFF2196F3, // Color azul por defecto
+    val selectedColor: Long = 0xFF2196F3,
+    val selectedIcon: ImageVector = Icons.Default.Category, // Nuevo campo
     val isLoading: Boolean = false,
     val error: String? = null
 ) {

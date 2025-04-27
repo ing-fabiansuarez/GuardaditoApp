@@ -220,7 +220,7 @@ fun CategoryItem(category: CategoryUi, onDelete: () -> Unit = {}) {
                 ,
                 contentAlignment = Alignment.Center
             ) {
-                category.icon()
+                category.icon
             }
             Spacer(modifier = Modifier.width(16.dp))
             Text(text = category.title, fontSize = 16.sp, fontWeight = FontWeight.Medium)
