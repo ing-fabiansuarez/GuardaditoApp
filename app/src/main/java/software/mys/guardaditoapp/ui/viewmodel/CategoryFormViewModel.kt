@@ -51,6 +51,8 @@ class CategoryFormViewModel(application: Application) : AndroidViewModel(applica
                     val category = CategoryUi(
                         title = _uiState.value.name,
                         type = _uiState.value.selectedType,
+                        color = _uiState.value.selectedColor,
+                        icon = _uiState.value.selectedIcon
                     )
                     repository.insert(category.toEntity())
                     _uiState.value = _uiState.value.copy(isLoading = false)

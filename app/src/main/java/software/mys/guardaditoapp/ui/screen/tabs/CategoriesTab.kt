@@ -216,7 +216,7 @@ fun CategoryItem(category: CategoryUi, onDelete: () -> Unit = {}) {
                     .size(40.dp)
                     .clip(CircleShape)
                     .clickable { }
-                    .background(color = category.color) // Asigna el color aquí
+                    .background(color = Color(category.color)) // Asigna el color aquí
                 ,
                 contentAlignment = Alignment.Center
             ) {
