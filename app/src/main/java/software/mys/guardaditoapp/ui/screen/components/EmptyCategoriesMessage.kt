@@ -16,10 +16,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import software.mys.guardaditoapp.ui.models.CategoryType
+import software.mys.guardaditoapp.ui.models.CategoryUiType
 
 @Composable
-public fun EmptyCategoriesMessage(type: CategoryType) {
+public fun EmptyCategoriesMessage(type: CategoryUiType) {
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,

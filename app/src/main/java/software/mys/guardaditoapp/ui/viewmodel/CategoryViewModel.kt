@@ -2,6 +2,8 @@ package software.mys.guardaditoapp.ui.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import software.mys.guardaditoapp.data.local.AppDatabase
@@ -32,5 +34,14 @@ data class CategoryUiState(
     val expenseCategories: List<CategoryUi> = emptyList()
 )
 
+class CategoryViewModelFactory(private val application: Application) : ViewModelProvider.Factory {
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(CategoryViewModel::class.java)) {
+            return CategoryViewModel(application) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
+    }
+}
 
 

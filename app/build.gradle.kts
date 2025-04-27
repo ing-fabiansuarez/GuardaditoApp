@@ -69,8 +69,14 @@ dependencies {
     implementation(libs.converter.gson)
 
     //librerias de ROOM
-    implementation("androidx.room:room-runtime:2.7.1")
-    annotationProcessor("androidx.room:room-compiler:2.7.1")
-    kapt("androidx.room:room-compiler:2.7.1")
+    implementation(libs.androidx.room.runtime.v271)
+    annotationProcessor(libs.room.compiler.v271)
+    kapt(libs.room.compiler.v271)
+
+    //libria para que salga un flow Row
+    implementation(libs.accompanist.flowlayout)
+
+    //libreria del viewmodel
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
 
 }

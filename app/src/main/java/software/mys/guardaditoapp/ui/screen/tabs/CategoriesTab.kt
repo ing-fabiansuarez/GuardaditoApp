@@ -1,5 +1,6 @@
 package software.mys.guardaditoapp.ui.screen.tabs
 
+import android.app.Application
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -38,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -46,13 +48,18 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import software.mys.guardaditoapp.ui.models.CategoryUi
-import software.mys.guardaditoapp.ui.models.CategoryType
+import software.mys.guardaditoapp.ui.models.CategoryUiType
 import software.mys.guardaditoapp.ui.viewmodel.CategoryViewModel
 import software.mys.guardaditoapp.ui.screen.components.EmptyCategoriesMessage
+import software.mys.guardaditoapp.ui.viewmodel.CategoryViewModelFactory
 
 @Preview
 @Composable
-fun CategoriesTab(viewmodel: CategoryViewModel = viewModel()) {
+fun CategoriesTab() {
+
+    val application = LocalContext.current.applicationContext as Application
+    val viewmodel: CategoryViewModel = viewModel(factory = CategoryViewModelFactory(application))
+
     val uiState by viewmodel.uiState.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
 
@@ -82,7 +89,7 @@ fun TabsExpenseAndIncome(
         var selectedTabIndex by remember { mutableStateOf(0) }
 
         // Usamos el enum para definir las pestañas
-        val tabs = CategoryType.entries.toTypedArray()
+        val tabs = CategoryUiType.entries.toTypedArray()
 
         Column(modifier = Modifier.fillMaxSize()) {
             TabRow(selectedTabIndex = selectedTabIndex) {
@@ -96,9 +103,9 @@ fun TabsExpenseAndIncome(
             }
 
             when (tabs[selectedTabIndex]) {
-                CategoryType.INCOME -> {
+                CategoryUiType.INCOME -> {
                     if (incomeCategories.isEmpty()) {
-                        EmptyCategoriesMessage(type = CategoryType.INCOME)
+                        EmptyCategoriesMessage(type = CategoryUiType.INCOME)
                     } else {
                         incomeCategories.forEach { category ->
                             CategoryItem(category)
@@ -107,9 +114,9 @@ fun TabsExpenseAndIncome(
 
                 }
 
-                CategoryType.EXPENSE -> {
+                CategoryUiType.EXPENSE -> {
                     if (expenseCategories.isEmpty()) {
-                        EmptyCategoriesMessage(type = CategoryType.EXPENSE)
+                        EmptyCategoriesMessage(type = CategoryUiType.EXPENSE)
                     } else {
                         expenseCategories.forEach { category ->
                             CategoryItem(category)

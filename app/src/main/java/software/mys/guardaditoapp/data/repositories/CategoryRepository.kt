@@ -11,6 +11,10 @@ class CategoryRepository(private val categoryDao: CategoryDao) {
         return categoryDao.getAll()
     }
 
+    fun insert(category: CategoryEntity) {
+        categoryDao.insert(category)
+    }
+
     fun getCatgoriesByType(type: CategoryEntityType): List<CategoryEntity> {
         return categoryDao.getCategoriesByType(type)
     }
