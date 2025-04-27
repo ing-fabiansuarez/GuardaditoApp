@@ -1,4 +1,4 @@
-package software.mys.guardaditoapp
+package software.mys.guardaditoapp.ui.screen.components
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Category
@@ -17,7 +17,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import org.tensorflow.lite.support.label.Category
+import software.mys.guardaditoapp.Routes
 
 
 data class BottomNavigationItem(
@@ -29,27 +29,24 @@ data class BottomNavigationItem(
 
 val items = listOf(
     BottomNavigationItem(
-        route = Routes.Home.route,
+        route = Routes.HomeTab.route,
         icon = Icons.Default.Home,
         unSelectedIcon = Icons.Outlined.Home,
-        title = Routes.Home.title
+        title = Routes.HomeTab.route
     ),
     BottomNavigationItem(
-        route = Routes.Categories.route,
+        route = Routes.CategoriesTab.route,
         icon = Icons.Default.Category,
         unSelectedIcon = Icons.Outlined.Category,
-        title = Routes.Categories.title
+        title = Routes.CategoriesTab.route
     )
-
 )
 
 @Composable
 fun NavigationBottomAppBar(navController: NavHostController) {
-
     var selectedItem by remember { mutableIntStateOf(0) }
     NavigationBar {
         items.forEachIndexed { index, item ->
-
             NavigationBarItem(
                 icon = {
                     Icon(

@@ -1,4 +1,4 @@
-package software.mys.guardaditoapp.ui.screen
+package software.mys.guardaditoapp.ui.screen.tabs
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -17,20 +17,17 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -47,21 +44,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.lifecycle.viewmodel.compose.viewModel
+import software.mys.guardaditoapp.ui.models.CategoryUi
+import software.mys.guardaditoapp.ui.models.CategoryType
 import software.mys.guardaditoapp.ui.viewmodel.CategoryViewModel
-
-
-@Composable
-fun CategoryFAB() {
-    FloatingActionButton(
-        onClick = {},
-    ) {
-        Icon(Icons.Filled.Add, "Agregar Categoria.")
-    }
-}
+import software.mys.guardaditoapp.ui.screen.components.EmptyCategoriesMessage
 
 @Preview
 @Composable
-fun CategoryScreen(viewmodel: CategoryViewModel = CategoryViewModel()) {
+fun CategoriesTab(viewmodel: CategoryViewModel = viewModel()) {
     val uiState by viewmodel.uiState.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
 
@@ -69,8 +60,6 @@ fun CategoryScreen(viewmodel: CategoryViewModel = CategoryViewModel()) {
         modifier = Modifier,
         incomeCategories = uiState.incomeCategories, expenseCategories = uiState.expenseCategories
     )
-
-
     // Mostrar el diálogo si showDialog es true
     if (showDialog) {
         FullScreenDialog(
@@ -79,7 +68,61 @@ fun CategoryScreen(viewmodel: CategoryViewModel = CategoryViewModel()) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TabsExpenseAndIncome(
+    modifier: Modifier,
+    incomeCategories: List<CategoryUi> = listOf(),
+    expenseCategories: List<CategoryUi> = listOf()
+) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .background(Color.White)
+    ) {
+        var selectedTabIndex by remember { mutableStateOf(0) }
+
+        // Usamos el enum para definir las pestañas
+        val tabs = CategoryType.entries.toTypedArray()
+
+        Column(modifier = Modifier.fillMaxSize()) {
+            TabRow(selectedTabIndex = selectedTabIndex) {
+                tabs.forEachIndexed { index, categoryType ->
+                    Tab(
+                        selected = selectedTabIndex == index,
+                        onClick = { selectedTabIndex = index },
+                        text = { Text(text = categoryType.getTabName()) }
+                    )
+                }
+            }
+
+            when (tabs[selectedTabIndex]) {
+                CategoryType.INCOME -> {
+                    if (incomeCategories.isEmpty()) {
+                        EmptyCategoriesMessage(type = CategoryType.INCOME)
+                    } else {
+                        incomeCategories.forEach { category ->
+                            CategoryItem(category)
+                        }
+                    }
+
+                }
+
+                CategoryType.EXPENSE -> {
+                    if (expenseCategories.isEmpty()) {
+                        EmptyCategoriesMessage(type = CategoryType.EXPENSE)
+                    } else {
+                        expenseCategories.forEach { category ->
+                            CategoryItem(category)
+                        }
+                    }
+
+                }
+            }
+        }
+
+    }
+}
+
 @Composable
 fun FullScreenDialog(onDismiss: () -> Unit) {
     Dialog(
@@ -139,71 +182,19 @@ fun FullScreenDialog(onDismiss: () -> Unit) {
 }
 
 @Composable
-fun FloatingButton(onClick: () -> Unit) {
+fun CategoryFAB(onClick : () -> Unit = {}) {
     FloatingActionButton(
-        onClick = onClick,
+        onClick = {
+            onClick()
+        },
     ) {
-        Icon(Icons.Filled.Add, "Floating action button.")
+        Icon(Icons.Filled.Add, "Agregar Categoria.")
     }
 }
 
-@Composable
-fun TabsExpenseAndIncome(
-    modifier: Modifier,
-    incomeCategories: List<Category> = listOf(),
-    expenseCategories: List<Category> = listOf()
-) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(Color.White)
-    ) {
-        var selectedTabIndex by remember { mutableStateOf(0) }
-
-        // Usamos el enum para definir las pestañas
-        val tabs = CategoryType.entries.toTypedArray()
-
-        Column(modifier = Modifier.fillMaxSize()) {
-            TabRow(selectedTabIndex = selectedTabIndex) {
-                tabs.forEachIndexed { index, categoryType ->
-                    Tab(
-                        selected = selectedTabIndex == index,
-                        onClick = { selectedTabIndex = index },
-                        text = { Text(text = categoryType.getTabName()) }
-                    )
-                }
-            }
-
-            when (tabs[selectedTabIndex]) {
-                CategoryType.INCOME -> {
-                    incomeCategories.forEach { category ->
-                        CategoryItem(category)
-                    }
-                }
-
-                CategoryType.EXPENSE -> {
-                    expenseCategories.forEach { category ->
-                        CategoryItem(category)
-                    }
-                }
-            }
-        }
-
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TopApp() {
-    TopAppBar(
-        title = {
-            Text("Categories", fontWeight = FontWeight.Bold)
-        }
-    )
-}
 
 @Composable
-fun CategoryItem(category: Category, onDelete: () -> Unit = {}) {
+fun CategoryItem(category: CategoryUi, onDelete: () -> Unit = {}) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
@@ -240,22 +231,5 @@ fun CategoryItem(category: Category, onDelete: () -> Unit = {}) {
 }
 
 
-// Definimos un enum para los tipos de categorías.
-enum class CategoryType {
-    INCOME, EXPENSE;
 
-    // Función para obtener el nombre de la pestaña
-    fun getTabName(): String {
-        return when (this) {
-            INCOME -> "Ingresos"
-            EXPENSE -> "Gastos"
-        }
-    }
-}
 
-data class Category(
-    val title: String,
-    val color: Color = Color.Black,
-    val type: CategoryType,
-    val icon: @Composable () -> Unit
-)

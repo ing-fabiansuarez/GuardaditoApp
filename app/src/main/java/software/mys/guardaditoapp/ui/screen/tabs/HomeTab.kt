@@ -1,11 +1,10 @@
-package software.mys.guardaditoapp.ui.screen
+package software.mys.guardaditoapp.ui.screen.tabs
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -23,7 +22,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -33,21 +31,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import software.mys.guardaditoapp.ui.theme.GuardaditoAppTheme
 
 
 @Composable
-fun HomeFAB() {
-    ExtendedFloatingActionButton(
-        onClick = { },
-        icon = { Icon(Icons.Filled.Add, "Agregar Transacción") },
-        text = { Text(text = "Agregar Transacción") },
-    )
-}
-
-
-@Composable
-fun HomeScreen() {
+fun HomeTab() {
     Column(
         modifier = Modifier
             .padding(8.dp)
@@ -135,5 +122,15 @@ fun BalanceItem(icon: ImageVector, label: String, amount: String, color: Color) 
         }
         Text(amount, color = color)
     }
+}
+
+
+@Composable
+fun HomeFAB() {
+    ExtendedFloatingActionButton(
+        onClick = { },
+        icon = { Icon(Icons.Filled.Add, "Agregar Transacción") },
+        text = { Text(text = "Agregar Transacción") },
+    )
 }
 
