@@ -17,6 +17,7 @@ class CategoryViewModel(application: Application) : AndroidViewModel(application
 
     private val _uiState = MutableStateFlow(CategoryUiState())
     val uiState = _uiState.asStateFlow()
+
     val db = AppDatabase.getInstance(application.applicationContext)
     val categoryRepository = CategoryRepository(db.categoryDao())
 
@@ -25,6 +26,10 @@ class CategoryViewModel(application: Application) : AndroidViewModel(application
             incomeCategories = categoryRepository.getCatgoriesByType(CategoryEntityType.INCOME).map { it.toCategoryUi() },
             expenseCategories = categoryRepository.getCatgoriesByType(CategoryEntityType.EXPENSE).map { it.toCategoryUi() }
         )
+    }
+
+    fun deleteCategory(category: CategoryUi) {
+        categoryRepository.deleteCategory(category.toEntity())
     }
 
 }

@@ -1,11 +1,5 @@
 package software.mys.guardaditoapp.data.local.entities
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDownward
-import androidx.compose.material.icons.filled.ArrowUpward
-import androidx.compose.material.icons.filled.Category
-import androidx.compose.material3.Icon
-import androidx.compose.ui.graphics.Color
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import software.mys.guardaditoapp.ui.models.CategoryUi
@@ -24,7 +18,8 @@ data class CategoryEntity(
 // Extensión mejorada para convertir CategoryEntity a CategoryUi
 fun CategoryEntity.toCategoryUi(): CategoryUi {
     return CategoryUi(
-        title = this.name,
+        id = this.id,
+        name = this.name,
         color = this.color,
         type = when(this.type) {
             CategoryEntityType.INCOME -> CategoryUiType.INCOME

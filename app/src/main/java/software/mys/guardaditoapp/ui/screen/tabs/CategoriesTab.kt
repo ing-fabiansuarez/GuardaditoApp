@@ -65,7 +65,10 @@ fun CategoriesTab() {
 
     TabsExpenseAndIncome(
         modifier = Modifier,
-        incomeCategories = uiState.incomeCategories, expenseCategories = uiState.expenseCategories
+        incomeCategories = uiState.incomeCategories, expenseCategories = uiState.expenseCategories,
+        onClickDeleteCategory = { category ->
+            viewmodel.deleteCategory(category)
+        }
     )
     // Mostrar el diálogo si showDialog es true
     if (showDialog) {
@@ -79,7 +82,8 @@ fun CategoriesTab() {
 fun TabsExpenseAndIncome(
     modifier: Modifier,
     incomeCategories: List<CategoryUi> = listOf(),
-    expenseCategories: List<CategoryUi> = listOf()
+    expenseCategories: List<CategoryUi> = listOf(),
+    onClickDeleteCategory: (CategoryUi) -> Unit = {}
 ) {
     Column(
         modifier = modifier
@@ -108,7 +112,9 @@ fun TabsExpenseAndIncome(
                         EmptyCategoriesMessage(type = CategoryUiType.INCOME)
                     } else {
                         incomeCategories.forEach { category ->
-                            CategoryItem(category)
+                            CategoryItem(
+                                category,
+                                onDelete = { category -> onClickDeleteCategory(category) })
                         }
                     }
 
@@ -189,7 +195,7 @@ fun FullScreenDialog(onDismiss: () -> Unit) {
 }
 
 @Composable
-fun CategoryFAB(onClick : () -> Unit = {}) {
+fun CategoryFAB(onClick: () -> Unit = {}) {
     FloatingActionButton(
         onClick = {
             onClick()
@@ -201,7 +207,7 @@ fun CategoryFAB(onClick : () -> Unit = {}) {
 
 
 @Composable
-fun CategoryItem(category: CategoryUi, onDelete: () -> Unit = {}) {
+fun CategoryItem(category: CategoryUi, onDelete: (CategoryUi) -> Unit = {}) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
@@ -220,17 +226,18 @@ fun CategoryItem(category: CategoryUi, onDelete: () -> Unit = {}) {
                 ,
                 contentAlignment = Alignment.Center
             ) {
-                category.icon
+                Icon(imageVector = category.icon, contentDescription = null)
             }
             Spacer(modifier = Modifier.width(16.dp))
-            Text(text = category.title, fontSize = 16.sp, fontWeight = FontWeight.Medium)
+            Text(text = category.name, fontSize = 16.sp, fontWeight = FontWeight.Medium)
 
         }
         // Ícono de eliminar
-        IconButton(onClick = onDelete) {
+        IconButton(onClick = { onDelete(category) }) {
             Icon(
                 imageVector = Icons.Default.Delete, // Cambia esto por el ícono que desees usar
-                contentDescription = "Eliminar categoría"
+                contentDescription = "Eliminar categoría",
+                tint = Color.Red
             )
         }
     }

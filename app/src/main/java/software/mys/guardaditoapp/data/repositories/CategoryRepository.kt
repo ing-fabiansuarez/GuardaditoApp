@@ -19,4 +19,8 @@ class CategoryRepository(private val categoryDao: CategoryDao) {
         return categoryDao.getCategoriesByType(type)
     }
 
+    fun deleteCategory(category: CategoryEntity){
+        categoryDao.delete(category)
+    }
+
 }
