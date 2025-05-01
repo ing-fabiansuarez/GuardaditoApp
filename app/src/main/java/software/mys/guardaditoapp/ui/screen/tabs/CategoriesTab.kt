@@ -199,37 +199,7 @@ fun FullScreenDialog(onDismiss: () -> Unit) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun CategoryFAB(viewmodel: CategoryViewModel) {
 
-    var showModal by remember { mutableStateOf(false) }
-
-    FloatingActionButton(
-        onClick = {
-            //onClick()
-            showModal = true
-        },
-    ) {
-        Icon(Icons.Filled.Add, "Agregar Categoria.")
-    }
-
-
-    if (showModal) {
-        ModalBottomSheet(
-            onDismissRequest = { showModal = false }
-        ) {
-            CategoryFormScreen(onCloseClick = {
-                showModal = false
-            }, onSaveComplete = { category ->
-                viewmodel.addNewCategory(category)
-                showModal = false
-            })
-
-        }
-    }
-
-}
 
 
 @Composable
