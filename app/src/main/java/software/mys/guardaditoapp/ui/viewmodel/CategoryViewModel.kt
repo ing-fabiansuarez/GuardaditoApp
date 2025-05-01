@@ -14,6 +14,7 @@ import software.mys.guardaditoapp.data.repositories.CategoryRepository
 import software.mys.guardaditoapp.ui.models.CategoryUi
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.launchIn
+import software.mys.guardaditoapp.ui.models.toEntity
 
 
 class CategoryViewModel(application: Application) : AndroidViewModel(application) {

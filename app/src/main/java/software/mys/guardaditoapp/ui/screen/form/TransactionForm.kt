@@ -1,40 +1,49 @@
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import TransactionForm
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.filled.Category
-import androidx.compose.material.icons.filled.Description
-import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.filled.Savings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import java.text.SimpleDateFormat
 import java.util.*
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TransactionDialog(
-    onDismissRequest: () -> Unit,
-    onSaveClick: (String, String, String, String, String) -> Unit
+fun TransactionForm(
+    title: @Composable () -> Unit,
+    onDismissRequest: () -> Unit = {},
+    onSaveClick: (String, String, String, String, String) -> Unit,
+    listCategories: List<String>,
+    listAccounts: List<String>
 ) {
-    var monto by remember { mutableStateOf("") }
-    var cuenta by remember { mutableStateOf("") }
-    var categoria by remember { mutableStateOf("") }
-    var detalle by remember { mutableStateOf("") }
-    var fecha by remember { mutableStateOf(SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())) }
+    var amount by remember { mutableStateOf("") }
+    var account by remember { mutableStateOf("") }
+    var category by remember { mutableStateOf("") }
+    var detail by remember { mutableStateOf("") }
+    var date by remember {
+        mutableStateOf(
+            SimpleDateFormat(
+                "dd/MM/yyyy",
+                Locale.getDefault()
+            ).format(Date())
+        )
+    }
 
     Dialog(onDismissRequest = onDismissRequest) {
         Card(
@@ -55,21 +64,13 @@ fun TransactionDialog(
                     .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Título del diálogo
-                Text(
-                    text = "Nuevo Registro",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
-
+                title()
                 Spacer(modifier = Modifier.height(8.dp))
 
                 // Campo Monto
                 OutlinedTextField(
-                    value = monto,
-                    onValueChange = { monto = it },
+                    value = amount,
+                    onValueChange = { amount = it },
                     label = { Text("Monto") },
                     leadingIcon = {
                         Icon(
@@ -84,29 +85,29 @@ fun TransactionDialog(
                 )
 
                 // Campo Cuenta con selector
-                var mostrarSelectorCuentas by remember { mutableStateOf(false) }
-                val cuentasDisponibles = remember {
-                    listOf("Efectivo", "Tarjeta de Crédito", "Cuenta Bancaria", "PayPal", "Ahorros")
+                var showSelectorAccounts by remember { mutableStateOf(false) }
+                val availableAccounts = remember {
+                    listAccounts
                 }
 
                 OutlinedTextField(
-                    value = cuenta,
+                    value = account,
                     onValueChange = { /* No permitir edición directa */ },
                     label = { Text("Cuenta") },
                     leadingIcon = {
                         Icon(
-                            imageVector = Icons.Default.Savings,
+                            imageVector = Icons.Default.AccountBalance,
                             contentDescription = "Cuenta"
                         )
                     },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 4.dp)
-                        .clickable { mostrarSelectorCuentas = true },
+                        .clickable { showSelectorAccounts = true },
                     shape = RoundedCornerShape(12.dp),
                     readOnly = true,
                     trailingIcon = {
-                        IconButton(onClick = { mostrarSelectorCuentas = true }) {
+                        IconButton(onClick = { showSelectorAccounts = true }) {
                             Icon(
                                 imageVector = Icons.Default.KeyboardArrowDown,
                                 contentDescription = "Seleccionar cuenta"
@@ -116,9 +117,9 @@ fun TransactionDialog(
                 )
 
                 // Diálogo de selección de cuentas
-                if (mostrarSelectorCuentas) {
+                if (showSelectorAccounts) {
                     AlertDialog(
-                        onDismissRequest = { mostrarSelectorCuentas = false },
+                        onDismissRequest = { showSelectorAccounts = false },
                         title = { Text("Seleccionar Cuenta") },
                         text = {
                             Column(
@@ -126,17 +127,17 @@ fun TransactionDialog(
                                     .fillMaxWidth()
                                     .padding(vertical = 8.dp)
                             ) {
-                                cuentasDisponibles.forEach { opcionCuenta ->
+                                availableAccounts.forEach { opcionCuenta ->
                                     Surface(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .padding(vertical = 4.dp)
                                             .clip(RoundedCornerShape(8.dp))
                                             .clickable {
-                                                cuenta = opcionCuenta
-                                                mostrarSelectorCuentas = false
+                                                account = opcionCuenta
+                                                showSelectorAccounts = false
                                             },
-                                        color = if (cuenta == opcionCuenta)
+                                        color = if (account == opcionCuenta)
                                             MaterialTheme.colorScheme.primaryContainer
                                         else MaterialTheme.colorScheme.surface
                                     ) {
@@ -162,7 +163,7 @@ fun TransactionDialog(
                             }
                         },
                         confirmButton = {
-                            TextButton(onClick = { mostrarSelectorCuentas = false }) {
+                            TextButton(onClick = { showSelectorAccounts = false }) {
                                 Text("Cerrar")
                             }
                         }
@@ -170,13 +171,13 @@ fun TransactionDialog(
                 }
 
                 // Campo Categoría con selector
-                var mostrarSelectorCategorias by remember { mutableStateOf(false) }
-                val categoriasDisponibles = remember {
-                    listOf("Alimentación", "Transporte", "Vivienda", "Entretenimiento", "Salud", "Educación", "Ropa", "Otros")
+                var showCategorySelector by remember { mutableStateOf(false) }
+                val availabelCategories = remember {
+                    listCategories
                 }
 
                 OutlinedTextField(
-                    value = categoria,
+                    value = category,
                     onValueChange = { /* No permitir edición directa */ },
                     label = { Text("Categoría") },
                     leadingIcon = {
@@ -188,11 +189,11 @@ fun TransactionDialog(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 4.dp)
-                        .clickable { mostrarSelectorCategorias = true },
+                        .clickable { showCategorySelector = true },
                     shape = RoundedCornerShape(12.dp),
                     readOnly = true,
                     trailingIcon = {
-                        IconButton(onClick = { mostrarSelectorCategorias = true }) {
+                        IconButton(onClick = { showCategorySelector = true }) {
                             Icon(
                                 imageVector = Icons.Default.KeyboardArrowDown,
                                 contentDescription = "Seleccionar categoría"
@@ -202,9 +203,9 @@ fun TransactionDialog(
                 )
 
                 // Diálogo de selección de categorías
-                if (mostrarSelectorCategorias) {
+                if (showCategorySelector) {
                     AlertDialog(
-                        onDismissRequest = { mostrarSelectorCategorias = false },
+                        onDismissRequest = { showCategorySelector = false },
                         title = { Text("Seleccionar Categoría") },
                         text = {
                             Column(
@@ -212,17 +213,17 @@ fun TransactionDialog(
                                     .fillMaxWidth()
                                     .padding(vertical = 8.dp)
                             ) {
-                                categoriasDisponibles.forEach { opcionCategoria ->
+                                availabelCategories.forEach { opcionCategoria ->
                                     Surface(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .padding(vertical = 4.dp)
                                             .clip(RoundedCornerShape(8.dp))
                                             .clickable {
-                                                categoria = opcionCategoria
-                                                mostrarSelectorCategorias = false
+                                                category = opcionCategoria
+                                                showCategorySelector = false
                                             },
-                                        color = if (categoria == opcionCategoria)
+                                        color = if (category == opcionCategoria)
                                             MaterialTheme.colorScheme.primaryContainer
                                         else MaterialTheme.colorScheme.surface
                                     ) {
@@ -248,7 +249,7 @@ fun TransactionDialog(
                             }
                         },
                         confirmButton = {
-                            TextButton(onClick = { mostrarSelectorCategorias = false }) {
+                            TextButton(onClick = { showCategorySelector = false }) {
                                 Text("Cerrar")
                             }
                         }
@@ -257,8 +258,8 @@ fun TransactionDialog(
 
                 // Campo Detalle
                 OutlinedTextField(
-                    value = detalle,
-                    onValueChange = { detalle = it },
+                    value = detail,
+                    onValueChange = { detail = it },
                     label = { Text("Detalle") },
                     leadingIcon = {
                         Icon(
@@ -272,10 +273,24 @@ fun TransactionDialog(
                     shape = RoundedCornerShape(12.dp)
                 )
 
-                // Campo Fecha
+                // Campo Fecha con selector de fecha material
+                var mostrarSelectorFecha by remember { mutableStateOf(false) }
+                val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+
+                val currentDate = remember {
+                    try {
+                        dateFormat.parse(date)?.time ?: System.currentTimeMillis()
+                    } catch (e: Exception) {
+                        System.currentTimeMillis()
+                    }
+                }
+
+                val datePickerState =
+                    rememberDatePickerState(initialSelectedDateMillis = currentDate)
+
                 OutlinedTextField(
-                    value = fecha,
-                    onValueChange = { fecha = it },
+                    value = date,
+                    onValueChange = { /* No permitir edición directa */ },
                     label = { Text("Fecha") },
                     leadingIcon = {
                         Icon(
@@ -285,9 +300,44 @@ fun TransactionDialog(
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 4.dp),
-                    shape = RoundedCornerShape(12.dp)
+                        .padding(vertical = 4.dp)
+                        .clickable { mostrarSelectorFecha = true },
+                    shape = RoundedCornerShape(12.dp),
+                    readOnly = true,
+                    trailingIcon = {
+                        IconButton(onClick = { mostrarSelectorFecha = true }) {
+                            Icon(
+                                imageVector = Icons.Default.CalendarToday,
+                                contentDescription = "Seleccionar fecha"
+                            )
+                        }
+                    }
                 )
+
+                if (mostrarSelectorFecha) {
+                    DatePickerDialog(
+                        onDismissRequest = { mostrarSelectorFecha = false },
+                        confirmButton = {
+                            TextButton(
+                                onClick = {
+                                    datePickerState.selectedDateMillis?.let {
+                                        date = dateFormat.format(Date(it))
+                                    }
+                                    mostrarSelectorFecha = false
+                                }
+                            ) {
+                                Text("OK")
+                            }
+                        },
+                        dismissButton = {
+                            TextButton(onClick = { mostrarSelectorFecha = false }) {
+                                Text("Cancelar")
+                            }
+                        }
+                    ) {
+                        DatePicker(state = datePickerState)
+                    }
+                }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -299,13 +349,11 @@ fun TransactionDialog(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     // Botón Cancelar
-                    Button(
+                    OutlinedButton(
                         onClick = onDismissRequest,
-                        modifier = Modifier.weight(1f).padding(end = 4.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.errorContainer,
-                            contentColor = MaterialTheme.colorScheme.onErrorContainer
-                        ),
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(end = 4.dp),
                         shape = RoundedCornerShape(12.dp)
                     ) {
                         Text("Cancelar")
@@ -314,13 +362,12 @@ fun TransactionDialog(
                     // Botón Guardar
                     Button(
                         onClick = {
-                            onSaveClick(monto, cuenta, categoria, detalle, fecha)
+                            onSaveClick(amount, account, category, detail, date)
                             onDismissRequest()
                         },
-                        modifier = Modifier.weight(1f).padding(start = 4.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary
-                        ),
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 4.dp),
                         shape = RoundedCornerShape(12.dp)
                     ) {
                         Text("Guardar")
@@ -331,34 +378,38 @@ fun TransactionDialog(
     }
 }
 
-// Ejemplo de cómo usar el diálogo en tu aplicación
+@Preview
 @Composable
-fun MiPantallaConDialogo() {
-    var mostrarDialogo by remember { mutableStateOf(false) }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Button(onClick = { mostrarDialogo = true }) {
-            Text("Mostrar Diálogo")
-        }
-
-        if (mostrarDialogo) {
-            TransactionDialog(
-                onDismissRequest = { mostrarDialogo = false },
-                onSaveClick = { monto, cuenta, categoria, detalle, fecha ->
-                    // Aquí puedes hacer lo que necesites con los datos capturados
-                    println("Monto: $monto")
-                    println("Cuenta: $cuenta")
-                    println("Categoría: $categoria")
-                    println("Detalle: $detalle")
-                    println("Fecha: $fecha")
-                }
+private fun TransactionFormPreview() {
+    TransactionForm(
+        title = {
+            Text(
+                text = "Titulo",
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(bottom = 16.dp)
             )
-        }
-    }
+        },
+        onDismissRequest = {},
+        onSaveClick = { monto, cuenta, categoria, detalle, fecha ->
+        },
+        listCategories = listOf(
+            "Alimentación",
+            "Transporte",
+            "Vivienda",
+            "Entretenimiento",
+            "Salud",
+            "Educación",
+            "Ropa",
+            "Otros"
+        ),
+        listAccounts = listOf(
+            "Efectivo",
+            "Tarjeta de Crédito",
+            "Cuenta Bancaria",
+            "PayPal",
+            "Ahorros"
+        )
+    )
 }

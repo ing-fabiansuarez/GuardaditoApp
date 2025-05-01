@@ -1,4 +1,4 @@
-package software.mys.guardaditoapp.ui.screen
+package software.mys.guardaditoapp.ui.screen.form
 
 import androidx.compose.foundation.background
 import androidx.compose.runtime.Composable
@@ -27,6 +27,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
@@ -51,106 +52,76 @@ import software.mys.guardaditoapp.ui.util.AppColors
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
-fun CategoryFormScreen(
+fun CategoryForm(
     viewModel: CategoryFormViewModel = viewModel(),
     onCloseClick: () -> Unit = {},
     onSaveComplete: (CategoryUi) -> Unit = {}
 ) {
+    ModalBottomSheet(
+        onDismissRequest = onCloseClick
+    ) {
+        val uiState by viewModel.uiState
 
-    val uiState by viewModel.uiState
-
-    // Muestra diálogo de error si existe
-    if (uiState.error != null) {
-        AlertDialog(
-            onDismissRequest = viewModel::dismissError,
-            title = { Text("Error") },
-            text = { Text(uiState.error!!) },
-            confirmButton = {
-                Button(onClick = viewModel::dismissError) {
-                    Text("OK")
-                }
-            }
-        )
-    }
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Nueva Categoría") },
-                navigationIcon = {
-                    IconButton(onClick = onCloseClick) {
-                        Icon(Icons.Default.Close, contentDescription = "Cancelar")
-                    }
-                })
-        }
-    ) { paddingValues ->
-        Card(
-            modifier = Modifier
-                .padding(paddingValues)
-                .fillMaxWidth()
-                .imePadding()
-                .verticalScroll(rememberScrollState())
-                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            Column(
-                modifier = Modifier.padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
+            Text("Nueva Categoria", style = MaterialTheme.typography.titleLarge)
+            OutlinedTextField(
+                value = uiState.name,
+                onValueChange = viewModel::setName,
+                label = { Text("Nombre") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
+            )
+            InputCategoryType(
+                modifier = Modifier.fillMaxWidth(),
+                selectedType = uiState.selectedType,
+                onTypeSelected = { type: CategoryUiType -> viewModel.setType(type) }
+            )
+            InputColor(onColorSelected = { colorValue ->
+                viewModel.setColor(colorValue)
+            }, selectedColor = uiState.selectedColor)
+
+            InputIcon(onIconSelected = { icon: ImageVector ->
+                viewModel.setIcon(icon)
+            }, selectedIcon = uiState.selectedIcon)
+
+            // Botón Guardar
+            Button(
+                onClick = {
+                    onSaveComplete(
+                        CategoryUi(
+                            name = uiState.name,
+                            type = uiState.selectedType,
+                            color = uiState.selectedColor,
+                            icon = uiState.selectedIcon
+                        )
+                    )
+                    onCloseClick()
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
+                enabled = uiState.isValid && !uiState.isLoading
             ) {
-                OutlinedTextField(
-                    value = uiState.name,
-                    onValueChange = viewModel::setName,
-                    label = { Text("Nombre") },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
-                )
-                InputCategoryType(
-                    modifier = Modifier.fillMaxWidth(),
-                    selectedType = uiState.selectedType,
-                    onTypeSelected = { type: CategoryUiType -> viewModel.setType(type) }
-                )
-                InputColor(onColorSelected = { colorValue ->
-                    viewModel.setColor(colorValue)
-                }, selectedColor = uiState.selectedColor)
-
-                InputIcon(onIconSelected = { icon: ImageVector ->
-                    viewModel.setIcon(icon)
-                }, selectedIcon = uiState.selectedIcon)
-
-
-                // Botón Guardar
-                Button(
-                    onClick = {
-                        onSaveComplete(
-                            CategoryUi(
-                                name = uiState.name,
-                                type = uiState.selectedType,
-                                color = uiState.selectedColor,
-                                icon = uiState.selectedIcon
-                            )
-                        )
-                        onCloseClick()
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp),
-                    enabled = uiState.isValid && !uiState.isLoading
-                ) {
-                    if (uiState.isLoading) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(24.dp),
-                            color = MaterialTheme.colorScheme.onPrimary
-                        )
-                    } else {
-                        Text("Guardar")
-                    }
+                if (uiState.isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                } else {
+                    Text("Guardar")
                 }
             }
         }
+
     }
 }
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun InputIcon(onIconSelected: (ImageVector) -> Unit, selectedIcon: ImageVector) {
+private fun InputIcon(onIconSelected: (ImageVector) -> Unit, selectedIcon: ImageVector) {
     Text("Icono", style = MaterialTheme.typography.bodyMedium)
     FlowRow(
         modifier = Modifier.fillMaxWidth(),
@@ -186,7 +157,7 @@ fun InputIcon(onIconSelected: (ImageVector) -> Unit, selectedIcon: ImageVector) 
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun InputColor(onColorSelected: (Long) -> Unit = {}, selectedColor: Long) {
+private fun InputColor(onColorSelected: (Long) -> Unit = {}, selectedColor: Long) {
     Text("Color", style = MaterialTheme.typography.bodyMedium)
     FlowRow(
         modifier = Modifier.fillMaxWidth(),
@@ -215,7 +186,7 @@ fun InputColor(onColorSelected: (Long) -> Unit = {}, selectedColor: Long) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun InputCategoryType(
+private fun InputCategoryType(
     modifier: Modifier = Modifier,
     selectedType: CategoryUiType,
     onTypeSelected: (CategoryUiType) -> Unit

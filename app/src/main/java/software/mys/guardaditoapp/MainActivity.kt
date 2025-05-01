@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 
 import androidx.activity.ComponentActivity
 import androidx.activity.enableEdgeToEdge
+import software.mys.guardaditoapp.ui.theme.GuardaditoAppTheme
 
 
 class MainActivity : ComponentActivity() {
@@ -13,7 +14,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-           NavigationApp()
+            GuardaditoAppTheme {
+                NavigationApp()
+            }
         }
     }
 }

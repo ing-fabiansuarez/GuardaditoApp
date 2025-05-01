@@ -16,19 +16,19 @@ data class CategoryUi(
     val color: Long = 0xFF2196F3,
     val type: CategoryUiType = CategoryUiType.EXPENSE,
     val icon: ImageVector = Icons.Default.Category
-) {
-    fun toEntity(): CategoryEntity {
-        return CategoryEntity(
-            id = this.id,
-            name = this.name,
-            type = when (this.type) {
-                CategoryUiType.INCOME -> CategoryEntityType.INCOME
-                CategoryUiType.EXPENSE -> CategoryEntityType.EXPENSE
-            },
-            color = this.color,
-            iconName = AppIcons.getNameByIcon(icon) // Guardamos el nombre del icono
-        )
-    }
+)
+
+fun CategoryUi.toEntity(): CategoryEntity {
+    return CategoryEntity(
+        id = this.id,
+        name = this.name,
+        type = when (this.type) {
+            CategoryUiType.INCOME -> CategoryEntityType.INCOME
+            CategoryUiType.EXPENSE -> CategoryEntityType.EXPENSE
+        },
+        color = this.color,
+        iconName = AppIcons.getNameByIcon(icon) // Guardamos el nombre del icono
+    )
 }
 
 
