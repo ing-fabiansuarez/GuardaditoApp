@@ -1,10 +1,20 @@
 package software.mys.guardaditoapp.ui.screen.tabs
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -15,15 +25,26 @@ import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
+import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.Balance
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.MoneyOff
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.SwapHoriz
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -127,10 +148,67 @@ fun BalanceItem(icon: ImageVector, label: String, amount: String, color: Color) 
 
 @Composable
 fun HomeFAB() {
-    ExtendedFloatingActionButton(
-        onClick = { },
-        icon = { Icon(Icons.Filled.Add, "Agregar Transacción") },
-        text = { Text(text = "Agregar Transacción") },
-    )
-}
+    var expanded by remember { mutableStateOf(false) }
+    Column(
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalAlignment = Alignment.End
+    ) {
+        if (expanded) {
 
+            // --- Botón 3: Transferencia (Azul) ---
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("Transferencia", modifier = Modifier.padding(end = 8.dp))
+                FloatingActionButton(
+                    onClick = { /* Lógica para transferencia */ },
+                    containerColor = Color(0xFF2196F3)
+                ) {
+                    Icon(
+                        Icons.Default.SwapHoriz,
+                        contentDescription = "Transferencia",
+                        tint = Color.White
+                    )
+                }
+            }
+            // --- Botón 1: Ingresos (Verde) ---
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("Ingresos", modifier = Modifier.padding(end = 8.dp))
+                FloatingActionButton(
+                    onClick = { /* Lógica para ingresos */ },
+                    containerColor = Color(0xFF4CAF50)
+                ) {
+                    Icon(
+                        Icons.Default.AttachMoney,
+                        contentDescription = "Ingresos",
+                        tint = Color.White
+                    )
+                }
+            }
+
+            // --- Botón 2: Gastos (Rojo) ---
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("Gastos", modifier = Modifier.padding(end = 8.dp))
+                FloatingActionButton(
+                    onClick = { /* Lógica para gastos */ },
+                    containerColor = Color(0xFFF44336)
+                ) {
+                    Icon(
+                        Icons.Default.MoneyOff,
+                        contentDescription = "Gastos",
+                        tint = Color.White
+                    )
+                }
+            }
+        }
+
+        ExtendedFloatingActionButton(
+            onClick = { expanded = !expanded },
+            icon = {
+                Icon(
+                    if (expanded) Icons.Filled.Close else Icons.Filled.Add,
+                    contentDescription = "Agregar Transacción"
+                )
+            },
+            text = { Text(text = if (expanded) "Cerrar" else "Agregar") },
+        )
+    }
+}
