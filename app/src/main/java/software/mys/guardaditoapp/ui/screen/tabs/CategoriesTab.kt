@@ -1,6 +1,7 @@
 package software.mys.guardaditoapp.ui.screen.tabs
 
 import android.app.Application
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,15 +15,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
@@ -49,23 +54,23 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import software.mys.guardaditoapp.ui.models.CategoryUi
 import software.mys.guardaditoapp.ui.models.CategoryUiType
+import software.mys.guardaditoapp.ui.screen.CategoryFormScreen
 import software.mys.guardaditoapp.ui.viewmodel.CategoryViewModel
 import software.mys.guardaditoapp.ui.screen.components.EmptyCategoriesMessage
 import software.mys.guardaditoapp.ui.viewmodel.CategoryViewModelFactory
 
-@Preview
-@Composable
-fun CategoriesTab() {
 
-    val application = LocalContext.current.applicationContext as Application
-    val viewmodel: CategoryViewModel = viewModel(factory = CategoryViewModelFactory(application))
+@Composable
+fun CategoriesTab(viewmodel: CategoryViewModel) {
+
 
     val uiState by viewmodel.uiState.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
 
     TabsExpenseAndIncome(
         modifier = Modifier,
-        incomeCategories = uiState.incomeCategories, expenseCategories = uiState.expenseCategories,
+        incomeCategories = uiState.listCategories.filter { it.type == CategoryUiType.INCOME },
+        expenseCategories = uiState.listCategories.filter { it.type == CategoryUiType.EXPENSE },
         onClickDeleteCategory = { category ->
             viewmodel.deleteCategory(category)
         }
@@ -194,15 +199,36 @@ fun FullScreenDialog(onDismiss: () -> Unit) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CategoryFAB(onClick: () -> Unit = {}) {
+fun CategoryFAB(viewmodel: CategoryViewModel) {
+
+    var showModal by remember { mutableStateOf(false) }
+
     FloatingActionButton(
         onClick = {
-            onClick()
+            //onClick()
+            showModal = true
         },
     ) {
         Icon(Icons.Filled.Add, "Agregar Categoria.")
     }
+
+
+    if (showModal) {
+        ModalBottomSheet(
+            onDismissRequest = { showModal = false }
+        ) {
+            CategoryFormScreen(onCloseClick = {
+                showModal = false
+            }, onSaveComplete = { category ->
+                viewmodel.addNewCategory(category)
+                showModal = false
+            })
+
+        }
+    }
+
 }
 
 

@@ -43,6 +43,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import software.mys.guardaditoapp.ui.viewmodel.CategoryFormViewModel
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.vector.ImageVector
+import software.mys.guardaditoapp.ui.models.CategoryUi
 import software.mys.guardaditoapp.ui.util.AppIcons
 import software.mys.guardaditoapp.ui.models.CategoryUiType
 import software.mys.guardaditoapp.ui.util.AppColors
@@ -53,7 +54,7 @@ import software.mys.guardaditoapp.ui.util.AppColors
 fun CategoryFormScreen(
     viewModel: CategoryFormViewModel = viewModel(),
     onCloseClick: () -> Unit = {},
-    onSaveComplete: () -> Unit = {}
+    onSaveComplete: (CategoryUi) -> Unit = {}
 ) {
 
     val uiState by viewModel.uiState
@@ -117,7 +118,17 @@ fun CategoryFormScreen(
 
                 // Botón Guardar
                 Button(
-                    onClick = { viewModel.saveCategory(onSaveComplete) },
+                    onClick = {
+                        onSaveComplete(
+                            CategoryUi(
+                                name = uiState.name,
+                                type = uiState.selectedType,
+                                color = uiState.selectedColor,
+                                icon = uiState.selectedIcon
+                            )
+                        )
+                        onCloseClick()
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp),

@@ -17,10 +17,6 @@ import software.mys.guardaditoapp.ui.util.AppIcons
 // ui/viewmodel/CategoryFormViewModel.kt
 class CategoryFormViewModel(application: Application) : AndroidViewModel(application) {
 
-    val db = AppDatabase.getInstance(application.applicationContext)
-    private val repository: CategoryRepository = CategoryRepository(db.categoryDao())
-
-
     private val _uiState = mutableStateOf(CategoryFormState())
     val uiState: State<CategoryFormState> = _uiState
 
@@ -41,7 +37,7 @@ class CategoryFormViewModel(application: Application) : AndroidViewModel(applica
         _uiState.value = _uiState.value.copy(selectedColor = color)
     }
 
-    fun saveCategory(onSuccess: () -> Unit) {
+    fun saveCategory() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
 
@@ -53,9 +49,6 @@ class CategoryFormViewModel(application: Application) : AndroidViewModel(applica
                         color = _uiState.value.selectedColor,
                         icon = _uiState.value.selectedIcon
                     )
-                    repository.insert(category.toEntity())
-                    _uiState.value = _uiState.value.copy(isLoading = false)
-                    onSuccess()
                 }
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(

@@ -1,11 +1,14 @@
 package software.mys.guardaditoapp.ui.screen
 
+import android.app.Application
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -17,14 +20,19 @@ import software.mys.guardaditoapp.ui.screen.tabs.CategoryFAB
 import software.mys.guardaditoapp.ui.screen.tabs.HomeFAB
 import software.mys.guardaditoapp.ui.screen.tabs.HomeTab
 import software.mys.guardaditoapp.ui.theme.GuardaditoAppTheme
+import software.mys.guardaditoapp.ui.viewmodel.CategoryViewModel
+import software.mys.guardaditoapp.ui.viewmodel.CategoryViewModelFactory
 
 @Composable
-fun MainScreen(onClickAddCategory: () -> Unit = {}) {
+fun MainScreen() {
     GuardaditoAppTheme {
         val navController = rememberNavController()
 
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentDestination = navBackStackEntry?.destination
+
+        val application = LocalContext.current.applicationContext as Application
+        val categoryViewmodel: CategoryViewModel = viewModel(factory = CategoryViewModelFactory(application))
 
         Scaffold(
             modifier = Modifier.fillMaxSize(),
@@ -34,7 +42,7 @@ fun MainScreen(onClickAddCategory: () -> Unit = {}) {
             floatingActionButton = {
                 when (currentDestination?.route) {
                     Routes.HomeTab.route -> HomeFAB()
-                    Routes.CategoriesTab.route -> CategoryFAB(onClick = onClickAddCategory)
+                    Routes.CategoriesTab.route -> CategoryFAB(categoryViewmodel)
                 }
             },
             bottomBar = { NavigationBottomAppBar(navController) }
@@ -48,7 +56,7 @@ fun MainScreen(onClickAddCategory: () -> Unit = {}) {
                     HomeTab()
                 }
                 composable(route = Routes.CategoriesTab.route) {
-                    CategoriesTab()
+                    CategoriesTab(categoryViewmodel)
                 }
             }
         }

@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import software.mys.guardaditoapp.data.local.AppDatabase
@@ -11,6 +12,8 @@ import software.mys.guardaditoapp.data.local.entities.CategoryEntityType
 import software.mys.guardaditoapp.data.local.entities.toCategoryUi
 import software.mys.guardaditoapp.data.repositories.CategoryRepository
 import software.mys.guardaditoapp.ui.models.CategoryUi
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.launchIn
 
 
 class CategoryViewModel(application: Application) : AndroidViewModel(application) {
@@ -22,21 +25,30 @@ class CategoryViewModel(application: Application) : AndroidViewModel(application
     val categoryRepository = CategoryRepository(db.categoryDao())
 
     init {
-        _uiState.value = _uiState.value.copy(
-            incomeCategories = categoryRepository.getCatgoriesByType(CategoryEntityType.INCOME).map { it.toCategoryUi() },
-            expenseCategories = categoryRepository.getCatgoriesByType(CategoryEntityType.EXPENSE).map { it.toCategoryUi() }
-        )
+        // Observamos el Flow desde el repositorio para actualizar el estado
+        categoryRepository.getAllCategories()
+            .onEach { categories ->
+                _uiState.value = _uiState.value.copy(
+                    listCategories = categories.map { it.toCategoryUi() }
+                )
+            }
+            .launchIn(viewModelScope)
+
+
     }
 
     fun deleteCategory(category: CategoryUi) {
         categoryRepository.deleteCategory(category.toEntity())
     }
 
+    fun addNewCategory(category: CategoryUi) {
+        categoryRepository.insert(category.toEntity())
+    }
+
 }
 
 data class CategoryUiState(
-    val incomeCategories: List<CategoryUi> = emptyList(),
-    val expenseCategories: List<CategoryUi> = emptyList()
+    val listCategories: List<CategoryUi> = emptyList(),
 )
 
 class CategoryViewModelFactory(private val application: Application) : ViewModelProvider.Factory {
