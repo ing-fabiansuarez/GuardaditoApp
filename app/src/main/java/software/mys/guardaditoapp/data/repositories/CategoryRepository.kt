@@ -8,8 +8,6 @@ import software.mys.guardaditoapp.data.local.entities.CategoryEntityType
 
 class CategoryRepository(private val categoryDao: CategoryDao) {
 
-
-
     fun insert(category: CategoryEntity) {
         categoryDao.insert(category)
     }

@@ -34,8 +34,6 @@ class CategoryViewModel(application: Application) : AndroidViewModel(application
                 )
             }
             .launchIn(viewModelScope)
-
-
     }
 
     fun deleteCategory(category: CategoryUi) {
