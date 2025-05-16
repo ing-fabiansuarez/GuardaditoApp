@@ -2,6 +2,8 @@ package software.mys.guardaditoapp.ui.screen
 
 import TransactionForm
 import android.app.Application
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,7 +19,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,14 +35,14 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import software.mys.guardaditoapp.ui.screen.components.NavigationBottomAppBar
 import software.mys.guardaditoapp.Routes
+import software.mys.guardaditoapp.ui.models.AccountUi
 import software.mys.guardaditoapp.ui.models.CategoryUiType
-import software.mys.guardaditoapp.ui.models.TransactionType
+import software.mys.guardaditoapp.ui.models.TransactionTypeUi
 import software.mys.guardaditoapp.ui.screen.components.floating_actions_button.CategoryFAB
 import software.mys.guardaditoapp.ui.screen.components.floating_actions_button.HomeFAB
 import software.mys.guardaditoapp.ui.screen.form.CategoryForm
 import software.mys.guardaditoapp.ui.screen.tabs.CategoriesTab
 import software.mys.guardaditoapp.ui.screen.tabs.HomeTab
-import software.mys.guardaditoapp.ui.theme.GuardaditoAppTheme
 import software.mys.guardaditoapp.ui.viewmodel.CategoryViewModel
 import software.mys.guardaditoapp.ui.viewmodel.CategoryViewModelFactory
 import software.mys.guardaditoapp.ui.viewmodel.TransactionViewModel
@@ -61,7 +62,7 @@ fun MainScreen() {
 
     var showCategoryForm by remember { mutableStateOf(false) }
     var showTransactionForm by remember { mutableStateOf(false) }
-    var typeTransaction by remember { mutableStateOf(TransactionType.INCOME) }
+    var typeTransaction by remember { mutableStateOf(TransactionTypeUi.INCOME) }
 
     if (showCategoryForm) {
         CategoryForm(onCloseClick = {
@@ -73,7 +74,7 @@ fun MainScreen() {
     }
     if (showTransactionForm) {
         when (typeTransaction) {
-            TransactionType.INCOME -> {
+            TransactionTypeUi.INCOME -> {
                 TransactionForm(
                     title = {
                         Row(
@@ -94,20 +95,20 @@ fun MainScreen() {
                             )
                         }
                     },
-                    onSaveClick = { a, b, cd, d, e ->
-
+                    onSaveClick = {
+                        Log.d("MainScreen", "onSaveClick: ${it.toString()}")
                     },
                     listCategories = transactionViewModel.categories.filter {
                         it.type == CategoryUiType.INCOME
-                    }.map { it.name },
-                    listAccounts = transactionViewModel.accounts.map { it.name },
+                    },
+                    listAccounts = transactionViewModel.accounts,
                     onDismissRequest = {
                         showTransactionForm = false
                     }
                 )
             }
 
-            TransactionType.EXPENSE -> {
+            TransactionTypeUi.EXPENSE -> {
                 TransactionForm(
                     title = {
                         Row(
@@ -128,19 +129,11 @@ fun MainScreen() {
                             )
                         }
                     },
-                    onSaveClick = { a, b, cd, d, e ->
-
+                    onSaveClick = {
                     },
-                    listCategories = listOf(
-                        "Alimentación",
-                        "Transporte",
-                        "Vivienda",
-                        "Entretenimiento"
-                    ),
-                    listAccounts = listOf(
-                        "Efectivo",
-                        "Tarjeta"
-                    ), onDismissRequest = {
+                    listCategories = listOf(),
+                    listAccounts = listOf<AccountUi>(),
+                    onDismissRequest = {
                         showTransactionForm = false
                     }
                 )
@@ -156,11 +149,11 @@ fun MainScreen() {
             when (currentDestination?.route) {
                 Routes.HomeTab.route -> HomeFAB(
                     onClickIncome = {
-                        typeTransaction = TransactionType.INCOME
+                        typeTransaction = TransactionTypeUi.INCOME
                         showTransactionForm = true
                     },
                     onClickExpense = {
-                        typeTransaction = TransactionType.EXPENSE
+                        typeTransaction = TransactionTypeUi.EXPENSE
                         showTransactionForm = true
                     }
                 )

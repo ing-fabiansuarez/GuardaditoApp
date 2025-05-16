@@ -1,49 +1,40 @@
-import TransactionForm
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.filled.Savings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import java.text.SimpleDateFormat
-import java.util.*
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.rememberDatePickerState
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import software.mys.guardaditoapp.ui.models.AccountUi
+import software.mys.guardaditoapp.ui.models.CategoryUi
+import software.mys.guardaditoapp.ui.screen.components.AccountSelectorDialog
+import software.mys.guardaditoapp.ui.screen.components.CategorySelectorDialog
+import software.mys.guardaditoapp.ui.screen.components.DateSelectorDialog
+import software.mys.guardaditoapp.ui.viewmodel.TransactionFormUiState
+import software.mys.guardaditoapp.ui.viewmodel.TransactionFormViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TransactionForm(
     title: @Composable () -> Unit,
     onDismissRequest: () -> Unit = {},
-    onSaveClick: (String, String, String, String, String) -> Unit,
-    listCategories: List<String>,
-    listAccounts: List<String>
+    onSaveClick: (TransactionFormUiState) -> Unit,
+    listCategories: List<CategoryUi>,
+    listAccounts: List<AccountUi>
 ) {
-    var amount by remember { mutableStateOf("") }
-    var account by remember { mutableStateOf("") }
-    var category by remember { mutableStateOf("") }
-    var detail by remember { mutableStateOf("") }
-    var date by remember {
-        mutableStateOf(
-            SimpleDateFormat(
-                "dd/MM/yyyy",
-                Locale.getDefault()
-            ).format(Date())
-        )
-    }
+
+    var transactionFormViewModel: TransactionFormViewModel = viewModel()
+    val uiState by transactionFormViewModel.uiState.collectAsState()
 
     Dialog(onDismissRequest = onDismissRequest) {
         Card(
@@ -62,15 +53,16 @@ fun TransactionForm(
                 modifier = Modifier
                     .padding(20.dp)
                     .fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 title()
                 Spacer(modifier = Modifier.height(8.dp))
 
                 // Campo Monto
                 OutlinedTextField(
-                    value = amount,
-                    onValueChange = { amount = it },
+                    value = uiState.amount.toString(),
+                    onValueChange = { it ->
+                        transactionFormViewModel.updateField("amount", it)
+                    },
                     label = { Text("Monto") },
                     leadingIcon = {
                         Icon(
@@ -79,187 +71,55 @@ fun TransactionForm(
                         )
                     },
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp),
-                    shape = RoundedCornerShape(12.dp)
-                )
-
-                // Campo Cuenta con selector
-                var showSelectorAccounts by remember { mutableStateOf(false) }
-                val availableAccounts = remember {
-                    listAccounts
-                }
-
-                OutlinedTextField(
-                    value = account,
-                    onValueChange = { /* No permitir edición directa */ },
-                    label = { Text("Cuenta") },
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.AccountBalance,
-                            contentDescription = "Cuenta"
-                        )
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp)
-                        .clickable { showSelectorAccounts = true },
+                        .fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
-                    readOnly = true,
-                    trailingIcon = {
-                        IconButton(onClick = { showSelectorAccounts = true }) {
-                            Icon(
-                                imageVector = Icons.Default.KeyboardArrowDown,
-                                contentDescription = "Seleccionar cuenta"
-                            )
+                    supportingText = {
+                        uiState.amountError?.let {
+                            Text(it, color = Color.Red, fontSize = 12.sp)
                         }
-                    }
+                    },
+                    isError = !uiState.amountError.isNullOrEmpty(),
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Decimal
+                    )
                 )
 
-                // Diálogo de selección de cuentas
-                if (showSelectorAccounts) {
-                    AlertDialog(
-                        onDismissRequest = { showSelectorAccounts = false },
-                        title = { Text("Seleccionar Cuenta") },
-                        text = {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 8.dp)
-                            ) {
-                                availableAccounts.forEach { opcionCuenta ->
-                                    Surface(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(vertical = 4.dp)
-                                            .clip(RoundedCornerShape(8.dp))
-                                            .clickable {
-                                                account = opcionCuenta
-                                                showSelectorAccounts = false
-                                            },
-                                        color = if (account == opcionCuenta)
-                                            MaterialTheme.colorScheme.primaryContainer
-                                        else MaterialTheme.colorScheme.surface
-                                    ) {
-                                        Row(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(12.dp),
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ) {
-                                            Icon(
-                                                imageVector = Icons.Default.Savings,
-                                                contentDescription = null,
-                                                tint = MaterialTheme.colorScheme.primary
-                                            )
-                                            Spacer(modifier = Modifier.width(12.dp))
-                                            Text(
-                                                text = opcionCuenta,
-                                                style = MaterialTheme.typography.bodyLarge
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        confirmButton = {
-                            TextButton(onClick = { showSelectorAccounts = false }) {
-                                Text("Cerrar")
-                            }
+
+                // Campo Account XD
+                AccountSelectorDialog(
+                    account = uiState.let { uiState.account },
+                    listAccounts = listAccounts,
+                    supportingText = {
+                        uiState.accountError?.let {
+                            Text(it, color = Color.Red, fontSize = 12.sp)
                         }
-                    )
+                    },
+                    isError = !uiState.accountError.isNullOrEmpty()
+                ) { itemSelected ->
+                    transactionFormViewModel.updateField("account", itemSelected)
                 }
+
 
                 // Campo Categoría con selector
-                var showCategorySelector by remember { mutableStateOf(false) }
-                val availabelCategories = remember {
-                    listCategories
-                }
-
-                OutlinedTextField(
-                    value = category,
-                    onValueChange = { /* No permitir edición directa */ },
-                    label = { Text("Categoría") },
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.Category,
-                            contentDescription = "Categoría"
-                        )
+                CategorySelectorDialog(
+                    category = uiState.let { uiState.category },
+                    listCategories = listCategories,
+                    supportingText = {
+                        uiState.categoryError?.let {
+                            Text(it, color = Color.Red, fontSize = 12.sp)
+                        }
                     },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp)
-                        .clickable { showCategorySelector = true },
-                    shape = RoundedCornerShape(12.dp),
-                    readOnly = true,
-                    trailingIcon = {
-                        IconButton(onClick = { showCategorySelector = true }) {
-                            Icon(
-                                imageVector = Icons.Default.KeyboardArrowDown,
-                                contentDescription = "Seleccionar categoría"
-                            )
-                        }
-                    }
-                )
-
-                // Diálogo de selección de categorías
-                if (showCategorySelector) {
-                    AlertDialog(
-                        onDismissRequest = { showCategorySelector = false },
-                        title = { Text("Seleccionar Categoría") },
-                        text = {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 8.dp)
-                            ) {
-                                availabelCategories.forEach { opcionCategoria ->
-                                    Surface(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(vertical = 4.dp)
-                                            .clip(RoundedCornerShape(8.dp))
-                                            .clickable {
-                                                category = opcionCategoria
-                                                showCategorySelector = false
-                                            },
-                                        color = if (category == opcionCategoria)
-                                            MaterialTheme.colorScheme.primaryContainer
-                                        else MaterialTheme.colorScheme.surface
-                                    ) {
-                                        Row(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(12.dp),
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ) {
-                                            Icon(
-                                                imageVector = Icons.Default.Category,
-                                                contentDescription = null,
-                                                tint = MaterialTheme.colorScheme.primary
-                                            )
-                                            Spacer(modifier = Modifier.width(12.dp))
-                                            Text(
-                                                text = opcionCategoria,
-                                                style = MaterialTheme.typography.bodyLarge
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        confirmButton = {
-                            TextButton(onClick = { showCategorySelector = false }) {
-                                Text("Cerrar")
-                            }
-                        }
-                    )
+                    isError = !uiState.categoryError.isNullOrEmpty()
+                ) {
+                    transactionFormViewModel.updateField("category", it)
                 }
 
                 // Campo Detalle
                 OutlinedTextField(
-                    value = detail,
-                    onValueChange = { detail = it },
+                    value = uiState.detail.toString(),
+                    onValueChange = {
+                        transactionFormViewModel.updateField("detail", it)
+                    },
                     label = { Text("Detalle") },
                     leadingIcon = {
                         Icon(
@@ -270,74 +130,29 @@ fun TransactionForm(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 4.dp),
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(12.dp),
+                    supportingText = {
+                        uiState.detailError?.let {
+                            Text(it, color = Color.Red, fontSize = 12.sp)
+                        }
+                    },
+                    isError = !uiState.detailError.isNullOrEmpty()
                 )
+
 
                 // Campo Fecha con selector de fecha material
-                var mostrarSelectorFecha by remember { mutableStateOf(false) }
-                val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-
-                val currentDate = remember {
-                    try {
-                        dateFormat.parse(date)?.time ?: System.currentTimeMillis()
-                    } catch (e: Exception) {
-                        System.currentTimeMillis()
-                    }
-                }
-
-                val datePickerState =
-                    rememberDatePickerState(initialSelectedDateMillis = currentDate)
-
-                OutlinedTextField(
-                    value = date,
-                    onValueChange = { /* No permitir edición directa */ },
-                    label = { Text("Fecha") },
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.CalendarMonth,
-                            contentDescription = "Fecha"
-                        )
+                DateSelectorDialog(
+                    date = uiState.date.toString(),
+                    supportingText = {
+                        uiState.dateError?.let {
+                            Text(it, color = Color.Red, fontSize = 12.sp)
+                        }
                     },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp)
-                        .clickable { mostrarSelectorFecha = true },
-                    shape = RoundedCornerShape(12.dp),
-                    readOnly = true,
-                    trailingIcon = {
-                        IconButton(onClick = { mostrarSelectorFecha = true }) {
-                            Icon(
-                                imageVector = Icons.Default.CalendarToday,
-                                contentDescription = "Seleccionar fecha"
-                            )
-                        }
-                    }
-                )
-
-                if (mostrarSelectorFecha) {
-                    DatePickerDialog(
-                        onDismissRequest = { mostrarSelectorFecha = false },
-                        confirmButton = {
-                            TextButton(
-                                onClick = {
-                                    datePickerState.selectedDateMillis?.let {
-                                        date = dateFormat.format(Date(it))
-                                    }
-                                    mostrarSelectorFecha = false
-                                }
-                            ) {
-                                Text("OK")
-                            }
-                        },
-                        dismissButton = {
-                            TextButton(onClick = { mostrarSelectorFecha = false }) {
-                                Text("Cancelar")
-                            }
-                        }
-                    ) {
-                        DatePicker(state = datePickerState)
-                    }
+                    isError = !uiState.dateError.isNullOrEmpty()
+                ) {
+                    transactionFormViewModel.updateField("date", it)
                 }
+
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -362,8 +177,9 @@ fun TransactionForm(
                     // Botón Guardar
                     Button(
                         onClick = {
-                            onSaveClick(amount, account, category, detail, date)
-                            onDismissRequest()
+                            transactionFormViewModel.onSave(onSaveSuccesful = {
+                                onSaveClick(it)
+                            })
                         },
                         modifier = Modifier
                             .weight(1f)
@@ -376,40 +192,4 @@ fun TransactionForm(
             }
         }
     }
-}
-
-@Preview
-@Composable
-private fun TransactionFormPreview() {
-    TransactionForm(
-        title = {
-            Text(
-                text = "Titulo",
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-        },
-        onDismissRequest = {},
-        onSaveClick = { monto, cuenta, categoria, detalle, fecha ->
-        },
-        listCategories = listOf(
-            "Alimentación",
-            "Transporte",
-            "Vivienda",
-            "Entretenimiento",
-            "Salud",
-            "Educación",
-            "Ropa",
-            "Otros"
-        ),
-        listAccounts = listOf(
-            "Efectivo",
-            "Tarjeta de Crédito",
-            "Cuenta Bancaria",
-            "PayPal",
-            "Ahorros"
-        )
-    )
 }
