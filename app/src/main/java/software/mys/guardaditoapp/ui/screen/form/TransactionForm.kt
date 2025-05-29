@@ -17,23 +17,28 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import software.mys.guardaditoapp.ui.models.AccountUi
 import software.mys.guardaditoapp.ui.models.CategoryUi
+import software.mys.guardaditoapp.ui.models.TransactionTypeUi
+import software.mys.guardaditoapp.ui.models.TransactionUi
 import software.mys.guardaditoapp.ui.screen.components.AccountSelectorDialog
 import software.mys.guardaditoapp.ui.screen.components.CategorySelectorDialog
 import software.mys.guardaditoapp.ui.screen.components.DateSelectorDialog
 import software.mys.guardaditoapp.ui.viewmodel.TransactionFormUiState
 import software.mys.guardaditoapp.ui.viewmodel.TransactionFormViewModel
+import kotlin.Double
+import kotlin.Long
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TransactionForm(
     title: @Composable () -> Unit,
     onDismissRequest: () -> Unit = {},
-    onSaveClick: (TransactionFormUiState) -> Unit,
+    typeTransation: TransactionTypeUi,
+    onSaveClick: (TransactionUi) -> Unit,
     listCategories: List<CategoryUi>,
     listAccounts: List<AccountUi>
 ) {
 
-    var transactionFormViewModel: TransactionFormViewModel = viewModel()
+    val transactionFormViewModel: TransactionFormViewModel = TransactionFormViewModel()
     val uiState by transactionFormViewModel.uiState.collectAsState()
 
     Dialog(onDismissRequest = onDismissRequest) {
@@ -178,7 +183,17 @@ fun TransactionForm(
                     Button(
                         onClick = {
                             transactionFormViewModel.onSave(onSaveSuccesful = {
-                                onSaveClick(it)
+                                onSaveClick(
+                                    TransactionUi(
+                                        amount = it.amount.toDoubleOrNull() ?: 0.0,
+                                        type = typeTransation,
+                                        accountId = it.account.id,
+                                        categoryId = it.category.id,
+                                        description = it.detail,
+                                        date = it.date,
+                                        targetAccountId = null
+                                    )
+                                )
                             })
                         },
                         modifier = Modifier

@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import software.mys.guardaditoapp.data.local.dao.TransactionDao
+import software.mys.guardaditoapp.data.local.daos.TransactionDao
 import software.mys.guardaditoapp.data.local.daos.AccountDao
 import software.mys.guardaditoapp.data.local.daos.CategoryDao
 import software.mys.guardaditoapp.data.local.entities.AccountEntity

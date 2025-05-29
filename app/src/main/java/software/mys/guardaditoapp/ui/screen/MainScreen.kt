@@ -95,6 +95,7 @@ fun MainScreen() {
                             )
                         }
                     },
+                    typeTransation = typeTransaction,
                     onSaveClick = {
                         Log.d("MainScreen", "onSaveClick: ${it.toString()}")
                     },
@@ -129,10 +130,13 @@ fun MainScreen() {
                             )
                         }
                     },
+                    typeTransation = typeTransaction,
                     onSaveClick = {
                     },
-                    listCategories = listOf(),
-                    listAccounts = listOf<AccountUi>(),
+                    listCategories = transactionViewModel.categories.filter {
+                        it.type == CategoryUiType.EXPENSE
+                    },
+                    listAccounts = transactionViewModel.accounts,
                     onDismissRequest = {
                         showTransactionForm = false
                     }
@@ -140,6 +144,8 @@ fun MainScreen() {
             }
         }
     }
+
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
