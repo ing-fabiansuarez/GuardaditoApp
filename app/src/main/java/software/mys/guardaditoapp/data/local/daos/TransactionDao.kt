@@ -5,6 +5,6 @@ import software.mys.guardaditoapp.data.local.entities.TransactionEntity
 
 @Dao
 interface TransactionDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert
     fun insertMovement(transaction: TransactionEntity): Long
 }

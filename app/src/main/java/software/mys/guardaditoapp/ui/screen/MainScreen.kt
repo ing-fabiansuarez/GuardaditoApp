@@ -98,6 +98,7 @@ fun MainScreen() {
                     typeTransation = typeTransaction,
                     onSaveClick = {
                         Log.d("MainScreen", "onSaveClick: ${it.toString()}")
+                        transactionViewModel.addNewTransaction(it)
                     },
                     listCategories = transactionViewModel.categories.filter {
                         it.type == CategoryUiType.INCOME
@@ -132,6 +133,7 @@ fun MainScreen() {
                     },
                     typeTransation = typeTransaction,
                     onSaveClick = {
+                        transactionViewModel.addNewTransaction(it)
                     },
                     listCategories = transactionViewModel.categories.filter {
                         it.type == CategoryUiType.EXPENSE

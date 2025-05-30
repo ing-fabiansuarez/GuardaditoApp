@@ -7,6 +7,7 @@ import androidx.room.RoomDatabase
 import software.mys.guardaditoapp.data.local.daos.TransactionDao
 import software.mys.guardaditoapp.data.local.daos.AccountDao
 import software.mys.guardaditoapp.data.local.daos.CategoryDao
+import software.mys.guardaditoapp.data.local.daos.StadisticsDao
 import software.mys.guardaditoapp.data.local.entities.AccountEntity
 import software.mys.guardaditoapp.data.local.entities.CategoryEntity
 import software.mys.guardaditoapp.data.local.entities.TransactionEntity
@@ -22,7 +23,8 @@ import software.mys.guardaditoapp.data.local.entities.TransactionEntity
 abstract class AppDatabase : RoomDatabase() {
     abstract fun categoryDao(): CategoryDao
     abstract fun accountDao(): AccountDao
-    abstract fun movementDao(): TransactionDao
+    abstract fun transactionDao(): TransactionDao
+    abstract fun stadisticsDao(): StadisticsDao
 
     companion object {
 

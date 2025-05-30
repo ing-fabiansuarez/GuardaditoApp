@@ -52,15 +52,26 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.flow.asStateFlow
+import software.mys.guardaditoapp.data.repositories.StadisticsRepository
+import software.mys.guardaditoapp.ui.viewmodel.HomeTabViewModel
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 
 
 @Composable
-fun HomeTab() {
+fun HomeTab(viewModel: HomeTabViewModel = viewModel()) {
+
+    val state by viewModel.uiState.collectAsState()
+
     Column(
         modifier = Modifier
             .padding(8.dp)
     ) {
-        BalanceCard()
+        BalanceCard(
+            saldoTotal = state.totalBalance
+        )
     }
 
 }
@@ -68,7 +79,7 @@ fun HomeTab() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BalanceCard() {
+fun BalanceCard(saldoTotal: Double = 0.0) {
     Card(
         modifier = Modifier
             .padding(16.dp)
@@ -83,7 +94,7 @@ fun BalanceCard() {
             ) {
                 Column {
                     Text("Saldo total", color = Color.Gray)
-                    Text("$50.000,00", fontSize = 28.sp, fontWeight = FontWeight.Bold)
+                    Text("${saldoTotal}", fontSize = 28.sp, fontWeight = FontWeight.Bold)
                 }
                 Icon(Icons.Filled.Visibility, contentDescription = null, tint = Color.Gray)
             }
