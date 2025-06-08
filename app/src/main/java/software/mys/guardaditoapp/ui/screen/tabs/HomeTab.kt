@@ -61,7 +61,7 @@ import androidx.compose.runtime.getValue
 
 
 @Composable
-fun HomeTab(viewModel: HomeTabViewModel = viewModel()) {
+fun HomeTab(viewModel: HomeTabViewModel = viewModel(), onAccountClick: () -> Unit = {}) {
 
     val state by viewModel.uiState.collectAsState()
 
@@ -70,7 +70,8 @@ fun HomeTab(viewModel: HomeTabViewModel = viewModel()) {
             .padding(8.dp)
     ) {
         BalanceCard(
-            saldoTotal = state.totalBalance
+            saldoTotal = state.totalBalance,
+            onAccountClick = onAccountClick
         )
     }
 
@@ -79,7 +80,7 @@ fun HomeTab(viewModel: HomeTabViewModel = viewModel()) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BalanceCard(saldoTotal: Double = 0.0) {
+fun BalanceCard(saldoTotal: Double = 0.0, onAccountClick: () -> Unit = {}) {
     Card(
         modifier = Modifier
             .padding(16.dp)
@@ -125,7 +126,7 @@ fun BalanceCard(saldoTotal: Double = 0.0) {
             }
             Spacer(modifier = Modifier.height(16.dp))
             Button(
-                onClick = { /*TODO*/ },
+                onClick = onAccountClick,
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(50)
             ) {

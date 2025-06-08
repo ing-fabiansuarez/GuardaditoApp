@@ -49,7 +49,7 @@ import software.mys.guardaditoapp.ui.viewmodel.TransactionViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen() {
+fun MainScreen(onAccountClick: () -> Unit = {}) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
@@ -179,7 +179,9 @@ fun MainScreen() {
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(route = Routes.HomeTab.route) {
-                HomeTab()
+                HomeTab(
+                    onAccountClick = { onAccountClick() }
+                )
             }
             composable(route = Routes.CategoriesTab.route) {
                 CategoriesTab(categoryViewmodel)

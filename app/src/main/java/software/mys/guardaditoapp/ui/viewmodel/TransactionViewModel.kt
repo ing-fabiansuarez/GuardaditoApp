@@ -48,27 +48,7 @@ class TransactionViewModel(application: Application) : AndroidViewModel(applicat
         }.launchIn(viewModelScope)
 
         if (accounts.isEmpty()) {
-            accountRepository.insert(
-                AccountEntity(
-                    name = "Efectivo",
-                    type = "Disponible",
-                    balance = 500_000.0,
-                    icon = "attach_money",  // o el nombre de tu ícono local
-                    color = 0xFFE57373 // Rojo claro
-                )
-            )
-            accountRepository.insert(
-                AccountEntity(
-                    name = "Cuenta Bancaria",
-                    type = "Ahorros",
-                    balance = 2_000_000.0,
-                    icon = "account_balance", // o tu nombre de ícono correspondiente
-                    color = 0xFF64B5F6 // Azul claro
-                )
-            )
-            accounts = accountRepository.getAllAccounts().map {
-                it.toUi()
-            }
+
 
 
         }
