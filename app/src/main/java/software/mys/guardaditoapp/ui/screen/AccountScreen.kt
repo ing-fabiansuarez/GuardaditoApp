@@ -1,5 +1,6 @@
 package software.mys.guardaditoapp.ui.screen
 
+import android.app.Application
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -35,6 +36,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,8 +50,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import software.mys.guardaditoapp.ui.models.AccountUi
 import software.mys.guardaditoapp.ui.screen.form.AccountForm
+import software.mys.guardaditoapp.ui.viewmodel.AccountViewModel
+import software.mys.guardaditoapp.ui.viewmodel.AccountViewModelFactory
 import java.text.NumberFormat
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -77,12 +82,16 @@ fun AccountScreen(onBackClick: () -> Unit = {}) {
         }
     }
 
+    val application = LocalContext.current.applicationContext as Application
+    val accountViewModel: AccountViewModel = viewModel(factory = AccountViewModelFactory(application))
+    val uiState by accountViewModel.uiState.collectAsState()
+
     var showForm by remember { mutableStateOf(false) }
     if (showForm) {
         AccountForm(
             onCloseClick = { showForm = false },
             onSaveComplete = { newAccount ->
-                // Manejar la nueva cuenta creada
+                accountViewModel.addAccount(newAccount)
             }
         )
     }
