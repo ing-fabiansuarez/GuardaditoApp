@@ -1,15 +1,21 @@
 package software.mys.guardaditoapp.ui.viewmodel
 
+import android.app.Application
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import software.mys.guardaditoapp.data.local.AppDatabase
 import software.mys.guardaditoapp.data.local.entities.TransactionEntity
 import software.mys.guardaditoapp.data.local.entities.TransactionTypeEntity
+import software.mys.guardaditoapp.data.local.entities.toUi
+import software.mys.guardaditoapp.data.repositories.AccountRepository
+import software.mys.guardaditoapp.data.repositories.CategoryRepository
 import software.mys.guardaditoapp.ui.models.AccountUi
 import software.mys.guardaditoapp.ui.models.CategoryUi
 import software.mys.guardaditoapp.ui.models.TransactionTypeUi
@@ -28,12 +34,32 @@ data class TransactionFormUiState(
     val accountError: String? = null,
     val categoryError: String? = null,
     val detailError: String? = null,
-    val dateError: String? = null
+    val dateError: String? = null,
+    var categories: List<CategoryUi> = mutableListOf<CategoryUi>(),
+    var accounts: List<AccountUi> = listOf<AccountUi>()
 )
 
-class TransactionFormViewModel : ViewModel() {
+class TransactionFormViewModel(application: Application) : AndroidViewModel(application) {
     private val _uiState = MutableStateFlow(TransactionFormUiState())
     val uiState: StateFlow<TransactionFormUiState> get() = _uiState
+
+    val db = AppDatabase.getInstance(application.applicationContext)
+    val accountRepository = AccountRepository(db.accountDao())
+    val categoryRepository = CategoryRepository(db.categoryDao())
+
+    init {
+        loadInitialData()
+    }
+
+    fun loadInitialData() {
+        _uiState.update {
+            it.copy(
+                accounts = accountRepository.getAllAccounts().map {
+                    it.toUi()
+                }
+            )
+        }
+    }
 
     fun updateField(field: String, value: Any?) {
         _uiState.update {

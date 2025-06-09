@@ -46,6 +46,11 @@ class AccountViewModel(application: Application) : AndroidViewModel(application)
         accountRepository.insert(account.toEntity())
         loadAccounts()
     }
+
+    fun deleteAccount(account: AccountUi) {
+        accountRepository.delete(account.toEntity())
+        loadAccounts()
+    }
 }
 
 class AccountViewModelFactory(private val application: Application) : ViewModelProvider.Factory {

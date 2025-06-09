@@ -19,6 +19,7 @@ import androidx.compose.material.icons.automirrored.filled.NavigateNext
 import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
@@ -60,27 +61,6 @@ import java.text.NumberFormat
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AccountScreen(onBackClick: () -> Unit = {}) {
-    // Datos de ejemplo para la lista
-    val sampleAccounts = remember {
-        List(10) { index ->
-            val colorVerde = 0xFF4CAF50L
-            val colorAzul = 0xFF2196F3L
-            val colorNaranja = 0xFFFF9800L
-            val colorRosa = 0xFFE91E63L
-            AccountUi(
-                id = index.toLong(),
-                name = "Cuenta Ejemplo ${index + 1}",
-                type = if (index % 2 == 0) "Ahorros" else "Corriente",
-                balance = (100000..5000000).random().toDouble(),
-                colorHex = when (index % 4) { // Cambiado aquí
-                    0 -> colorVerde
-                    1 -> colorAzul
-                    2 -> colorNaranja
-                    else -> colorRosa
-                }
-            )
-        }
-    }
 
     val application = LocalContext.current.applicationContext as Application
     val accountViewModel: AccountViewModel = viewModel(factory = AccountViewModelFactory(application))
@@ -132,14 +112,19 @@ fun AccountScreen(onBackClick: () -> Unit = {}) {
             verticalArrangement = Arrangement.spacedBy(8.dp) // Espacio entre items
         ) {
             item { // Primer item especial para el SummaryAccount
-                SummaryAccount(total = sampleAccounts.sumOf { it.balance })
+                SummaryAccount(total = uiState.accounts.sumOf { it.balance })
                 Spacer(modifier = Modifier.size(16.dp)) // Espacio después del resumen
             }
 
             items(
-                sampleAccounts,
+                uiState.accounts,
                 key = { account -> account.id }) { account -> // Bucle sobre la lista de cuentas
-                AccountItem(account = account)
+                AccountItem(
+                    account = account,
+                    onDeleteClick = { accountToDelete ->
+                        accountViewModel.deleteAccount(accountToDelete)
+                    }
+                )
             }
         }
 
@@ -195,9 +180,9 @@ fun SummaryAccount(total: Double) {
 }
 
 @Composable
-fun AccountItem(account: AccountUi) {
+fun AccountItem(account: AccountUi, onDeleteClick: (AccountUi) -> Unit = {}) {
     Card {
-        Column() {
+        Column {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -218,7 +203,23 @@ fun AccountItem(account: AccountUi) {
                         Text(account.type)
                     }
                 }
-                Icon(Icons.AutoMirrored.Filled.NavigateNext, contentDescription = null)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(onClick = {}) {
+                        Icon(Icons.AutoMirrored.Filled.NavigateNext, contentDescription = null)
+                    }
+                    IconButton(
+                        onClick = { onDeleteClick(account) }
+                    ) {
+                        Icon(
+                            Icons.Default.Delete,
+                            contentDescription = "Eliminar cuenta",
+                            tint = MaterialTheme.colorScheme.error
+                        )
+                    }
+
+                }
             }
             HorizontalDivider()
             Row(

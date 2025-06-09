@@ -34,11 +34,10 @@ fun TransactionForm(
     onDismissRequest: () -> Unit = {},
     typeTransation: TransactionTypeUi,
     onSaveClick: (TransactionUi) -> Unit,
-    listCategories: List<CategoryUi>,
-    listAccounts: List<AccountUi>
+    listCategories: List<CategoryUi>
 ) {
 
-    val transactionFormViewModel: TransactionFormViewModel = TransactionFormViewModel()
+    val transactionFormViewModel: TransactionFormViewModel = viewModel()
     val uiState by transactionFormViewModel.uiState.collectAsState()
 
     Dialog(onDismissRequest = onDismissRequest) {
@@ -93,7 +92,7 @@ fun TransactionForm(
                 // Campo Account XD
                 AccountSelectorDialog(
                     account = uiState.let { uiState.account },
-                    listAccounts = listAccounts,
+                    listAccounts = uiState.accounts,
                     supportingText = {
                         uiState.accountError?.let {
                             Text(it, color = Color.Red, fontSize = 12.sp)
