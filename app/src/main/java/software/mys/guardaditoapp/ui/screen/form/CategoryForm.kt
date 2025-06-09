@@ -121,7 +121,7 @@ fun CategoryForm(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun InputIcon(onIconSelected: (ImageVector) -> Unit, selectedIcon: ImageVector) {
+fun InputIcon(onIconSelected: (ImageVector) -> Unit, selectedIcon: ImageVector) {
     Text("Icono", style = MaterialTheme.typography.bodyMedium)
     FlowRow(
         modifier = Modifier.fillMaxWidth(),
@@ -157,7 +157,7 @@ private fun InputIcon(onIconSelected: (ImageVector) -> Unit, selectedIcon: Image
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun InputColor(onColorSelected: (Long) -> Unit = {}, selectedColor: Long) {
+ fun InputColor(onColorSelected: (Long) -> Unit = {}, selectedColor: Long) {
     Text("Color", style = MaterialTheme.typography.bodyMedium)
     FlowRow(
         modifier = Modifier.fillMaxWidth(),

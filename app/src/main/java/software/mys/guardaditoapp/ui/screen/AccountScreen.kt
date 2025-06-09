@@ -49,6 +49,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import software.mys.guardaditoapp.ui.models.AccountUi
+import software.mys.guardaditoapp.ui.screen.form.AccountForm
 import java.text.NumberFormat
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -76,6 +77,16 @@ fun AccountScreen(onBackClick: () -> Unit = {}) {
         }
     }
 
+    var showForm by remember { mutableStateOf(false) }
+    if (showForm) {
+        AccountForm(
+            onCloseClick = { showForm = false },
+            onSaveComplete = { newAccount ->
+                // Manejar la nueva cuenta creada
+            }
+        )
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -87,7 +98,9 @@ fun AccountScreen(onBackClick: () -> Unit = {}) {
                 },
                 actions = {
                     OutlinedButton(
-                        onClick = { }
+                        onClick = {
+                            showForm = true
+                        }
                     ) {
                         Icon(
                             Icons.Default.Add,
@@ -103,6 +116,7 @@ fun AccountScreen(onBackClick: () -> Unit = {}) {
             )
         }
     ) { innerPadding ->
+
         LazyColumn(
             modifier = Modifier.padding(innerPadding),
             contentPadding = PaddingValues(16.dp), // Padding alrededor de la lista
@@ -119,6 +133,7 @@ fun AccountScreen(onBackClick: () -> Unit = {}) {
                 AccountItem(account = account)
             }
         }
+
 
     }
 
