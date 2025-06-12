@@ -5,13 +5,9 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import software.mys.guardaditoapp.data.local.AppDatabase
-import software.mys.guardaditoapp.data.local.entities.AccountEntity
 import software.mys.guardaditoapp.data.repositories.AccountRepository
 import software.mys.guardaditoapp.ui.models.AccountUi
 import software.mys.guardaditoapp.data.local.entities.toUi
@@ -45,7 +41,7 @@ class AccountViewModel(application: Application) : AndroidViewModel(application)
     }
 
     fun addAccount(account: AccountUi) {
-        accountRepository.insert(account.toEntity())
+        accountRepository.save(account.toEntity())
         loadAccounts()
     }
 

@@ -1,6 +1,7 @@
 package software.mys.guardaditoapp.ui.screen
 
 import android.app.Application
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -52,7 +53,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import software.mys.guardaditoapp.formatNumberFromDoubleToString
 import software.mys.guardaditoapp.ui.models.AccountUi
+import software.mys.guardaditoapp.ui.screen.components.AccountItem
+import software.mys.guardaditoapp.ui.screen.components.SummaryAccount
 import software.mys.guardaditoapp.ui.screen.form.AccountForm
 import software.mys.guardaditoapp.ui.viewmodel.AccountViewModel
 import software.mys.guardaditoapp.ui.viewmodel.AccountViewModelFactory
@@ -63,8 +67,10 @@ import java.text.NumberFormat
 fun AccountScreen(onBackClick: () -> Unit = {}) {
 
     val application = LocalContext.current.applicationContext as Application
-    val accountViewModel: AccountViewModel = viewModel(factory = AccountViewModelFactory(application))
+    val accountViewModel: AccountViewModel =
+        viewModel(factory = AccountViewModelFactory(application))
     val uiState by accountViewModel.uiState.collectAsState()
+    var selectedAccount by remember { mutableStateOf(AccountUi()) }
 
     var showForm by remember { mutableStateOf(false) }
     if (showForm) {
@@ -72,7 +78,9 @@ fun AccountScreen(onBackClick: () -> Unit = {}) {
             onCloseClick = { showForm = false },
             onSaveComplete = { newAccount ->
                 accountViewModel.addAccount(newAccount)
-            }
+                Toast.makeText(application, "Cuenta guardada", Toast.LENGTH_SHORT).show()
+            },
+            account = selectedAccount
         )
     }
 
@@ -89,6 +97,7 @@ fun AccountScreen(onBackClick: () -> Unit = {}) {
                     OutlinedButton(
                         onClick = {
                             showForm = true
+                            selectedAccount = AccountUi()
                         }
                     ) {
                         Icon(
@@ -123,6 +132,11 @@ fun AccountScreen(onBackClick: () -> Unit = {}) {
                     account = account,
                     onDeleteClick = { accountToDelete ->
                         accountViewModel.deleteAccount(accountToDelete)
+                        Toast.makeText(application, "Cuenta eliminada.", Toast.LENGTH_SHORT).show()
+                    },
+                    onClickItem = {
+                        selectedAccount = it
+                        showForm = true
                     }
                 )
             }
@@ -133,111 +147,6 @@ fun AccountScreen(onBackClick: () -> Unit = {}) {
 
 }
 
-
-@Composable
-fun SummaryAccount(total: Double) {
-    var isBalanceVisible by rememberSaveable { mutableStateOf(true) }
-    // Obtener el contexto local para acceder a la configuración regional del dispositivo
-    val context = LocalContext.current
-    // Obtener la configuración regional actual del dispositivo
-    val currentLocale = context.resources.configuration.locales[0]
-
-    // Crear un formateador de números para la configuración regional actual
-    // Esto asegura que se usen los separadores correctos (p.ej., "," para miles y "." para decimal en US)
-    // o (p.ej., "." para miles y "," para decimal en muchos países europeos)
-    val numberFormatter = remember(currentLocale) {
-        NumberFormat.getInstance(currentLocale).apply {
-            // Opcional: Configurar el número máximo y mínimo de dígitos fraccionarios
-            // minimumFractionDigits = 2
-            // maximumFractionDigits = 2
-        }
-    }
-    val formattedBalance = remember(total, currentLocale) {
-        numberFormatter.format(total)
-    }
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Text("Saldo Total")
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Muestra el saldo o asteriscos según el estado de isBalanceVisible
-            Text(
-                text = if (isBalanceVisible) "$ $formattedBalance" else "$ ****.**",
-                fontSize = 32.sp
-            )
-            Icon(
-                imageVector = if (isBalanceVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                contentDescription = if (isBalanceVisible) "Ocultar saldo" else "Mostrar saldo",
-                modifier = Modifier.clickable {
-                    // Cambia el estado de visibilidad al hacer clic
-                    isBalanceVisible = !isBalanceVisible
-                }
-            )
-        }
-    }
-}
-
-@Composable
-fun AccountItem(account: AccountUi, onDeleteClick: (AccountUi) -> Unit = {}) {
-    Card {
-        Column {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        Icons.Default.AccountBalanceWallet,
-                        contentDescription = null,
-                        modifier = Modifier.size(48.dp),
-                        tint = Color(account.colorHex)
-                    )
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Column {
-                        Text(account.name, fontSize = 18.sp, fontWeight = FontWeight.Bold)
-                        Text(account.type)
-                    }
-                }
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconButton(onClick = {}) {
-                        Icon(Icons.AutoMirrored.Filled.NavigateNext, contentDescription = null)
-                    }
-                    IconButton(
-                        onClick = { onDeleteClick(account) }
-                    ) {
-                        Icon(
-                            Icons.Default.Delete,
-                            contentDescription = "Eliminar cuenta",
-                            tint = MaterialTheme.colorScheme.error
-                        )
-                    }
-
-                }
-            }
-            HorizontalDivider()
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text("Balance: ")
-                Text(
-                    "$ ${account.balance.toString()}",
-                    fontSize = 18.sp
-                )
-            }
-        }
-    }
-}
 
 @Preview() // Añade un fondo blanco para mejor visualización
 @Composable

@@ -12,7 +12,6 @@ data class AccountUi(
     val name: String = "",           // Nombre de la cuenta, ej. "Nequi", "Davivienda"
     val type: String = "",           // Tipo: "Ahorros", "Corriente", "Crédito", "Efectivo"
     val balance: Double = 0.0,        // Saldo visible (como String si viene del usuario o editable)
-    val icon: ImageVector = Icons.Default.AccountBalanceWallet,         // Nombre del ícono asociado o URL/local path
     val colorHex: Long = 0xFF00897B // Color asociado (puede usarse en UI para distinguir cuentas)
 )
 
@@ -22,7 +21,6 @@ fun AccountUi.toEntity(): AccountEntity {
         name = name,
         type = type,
         balance = balance,
-        iconName = AppIcons.getNameByIcon(icon),
         color = colorHex
     )
 }

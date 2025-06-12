@@ -53,10 +53,6 @@ class CategoryFormViewModel(application: Application) : AndroidViewModel(applica
 }
 
 data class CategoryFormState(
-    val name: String = "",
-    val selectedType: CategoryUiType = CategoryUiType.INCOME,
-    val selectedColor: Long = AppColors.colors.first(),
-    val selectedIcon: ImageVector = AppIcons.getAllIcons().first().second, // Nuevo campo
     val isLoading: Boolean = false,
     val error: String? = null,
     val categoryUi: CategoryUi = CategoryUi()

@@ -13,7 +13,10 @@ interface AccountDao {
     @Insert
     fun insert(account: AccountEntity): Long
 
-    @Query("SELECT * FROM accounts ORDER BY name ASC")
+    @Update
+    fun update(account: AccountEntity)
+
+    @Query("SELECT * FROM accounts ORDER BY id ASC")
     fun getAll(): List<AccountEntity>
 
     @Update
