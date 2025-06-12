@@ -1,7 +1,6 @@
 package software.mys.guardaditoapp.ui.screen
 
 import TransactionForm
-import android.app.Application
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Row
@@ -19,6 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,7 +35,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import software.mys.guardaditoapp.ui.screen.components.NavigationBottomAppBar
 import software.mys.guardaditoapp.Routes
-import software.mys.guardaditoapp.ui.models.AccountUi
 import software.mys.guardaditoapp.ui.models.CategoryUiType
 import software.mys.guardaditoapp.ui.models.TransactionTypeUi
 import software.mys.guardaditoapp.ui.screen.components.floating_actions_button.CategoryFAB
@@ -43,8 +42,7 @@ import software.mys.guardaditoapp.ui.screen.components.floating_actions_button.H
 import software.mys.guardaditoapp.ui.screen.form.CategoryForm
 import software.mys.guardaditoapp.ui.screen.tabs.CategoriesTab
 import software.mys.guardaditoapp.ui.screen.tabs.HomeTab
-import software.mys.guardaditoapp.ui.viewmodel.CategoryViewModel
-import software.mys.guardaditoapp.ui.viewmodel.CategoryViewModelFactory
+import software.mys.guardaditoapp.ui.viewmodel.MainViewModel
 import software.mys.guardaditoapp.ui.viewmodel.TransactionViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -53,11 +51,11 @@ fun MainScreen(onAccountClick: () -> Unit = {}) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
+    val context = LocalContext.current
 
-    val application = LocalContext.current.applicationContext as Application
+    val mainViewModel: MainViewModel = viewModel()
+    val uiState by mainViewModel.uiState.collectAsState()
 
-    val categoryViewmodel: CategoryViewModel =
-        viewModel(factory = CategoryViewModelFactory(application))
     val transactionViewModel: TransactionViewModel = viewModel()
 
     var showCategoryForm by remember { mutableStateOf(false) }
@@ -68,10 +66,12 @@ fun MainScreen(onAccountClick: () -> Unit = {}) {
         CategoryForm(onCloseClick = {
             showCategoryForm = false
         }, onSaveComplete = { category ->
-            categoryViewmodel.addNewCategory(category)
+            mainViewModel.addNewCategory(category)
+            Toast.makeText(context, "Categoría guardada", Toast.LENGTH_SHORT).show()
             showCategoryForm = false
         })
     }
+
     if (showTransactionForm) {
         when (typeTransaction) {
             TransactionTypeUi.INCOME -> {
@@ -103,7 +103,6 @@ fun MainScreen(onAccountClick: () -> Unit = {}) {
                     listCategories = transactionViewModel.categories.filter {
                         it.type == CategoryUiType.INCOME
                     },
-                    listAccounts = transactionViewModel.accounts,
                     onDismissRequest = {
                         showTransactionForm = false
                     }
@@ -138,7 +137,6 @@ fun MainScreen(onAccountClick: () -> Unit = {}) {
                     listCategories = transactionViewModel.categories.filter {
                         it.type == CategoryUiType.EXPENSE
                     },
-                    listAccounts = transactionViewModel.accounts,
                     onDismissRequest = {
                         showTransactionForm = false
                     }
@@ -166,9 +164,11 @@ fun MainScreen(onAccountClick: () -> Unit = {}) {
                     }
                 )
 
-                Routes.CategoriesTab.route -> CategoryFAB(onClickListener = {
-                    showCategoryForm = true
-                })
+                Routes.CategoriesTab.route -> {
+                    CategoryFAB(onClickListener = {
+                        showCategoryForm = true
+                    })
+                }
             }
         },
         bottomBar = { NavigationBottomAppBar(navController) }
@@ -184,11 +184,18 @@ fun MainScreen(onAccountClick: () -> Unit = {}) {
                 )
             }
             composable(route = Routes.CategoriesTab.route) {
-                CategoriesTab(categoryViewmodel)
+                mainViewModel.loadAllCategories()
+                CategoriesTab(
+                    listCategories = uiState.listCategories,
+                    onDeleteCategory = {
+                        mainViewModel.deleteCategory(it)
+                        Toast.makeText(context, "Categoría eliminada", Toast.LENGTH_SHORT).show()
+                    })
             }
         }
     }
 }
+
 
 
 

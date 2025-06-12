@@ -1,6 +1,7 @@
 package software.mys.guardaditoapp.ui.viewmodel
 
 import android.app.Application
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -20,6 +21,9 @@ class CategoryFormViewModel(application: Application) : AndroidViewModel(applica
     private val _uiState = mutableStateOf(CategoryFormState())
     val uiState: State<CategoryFormState> = _uiState
 
+    init {
+        Log.i("fabian", "CategoryFormViewModel")
+    }
 
     fun setName(name: String) {
         _uiState.value = _uiState.value.copy(name = name)

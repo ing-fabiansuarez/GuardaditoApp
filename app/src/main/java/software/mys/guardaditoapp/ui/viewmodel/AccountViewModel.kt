@@ -1,6 +1,7 @@
 package software.mys.guardaditoapp.ui.viewmodel
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -31,6 +32,7 @@ class AccountViewModel(application: Application) : AndroidViewModel(application)
 
     init {
         loadAccounts()
+        Log.i("fabian","AccountViewModel")
     }
 
     private fun loadAccounts() {

@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
@@ -30,6 +31,8 @@ class TransactionViewModel(application: Application) : AndroidViewModel(applicat
     var categories = mutableListOf<CategoryUi>()
     var accounts = listOf<AccountUi>()
 
+
+
     val db = AppDatabase.getInstance(application.applicationContext)
     val accountRepository = AccountRepository(db.accountDao())
     val categoryRepository = CategoryRepository(db.categoryDao())
@@ -40,80 +43,15 @@ class TransactionViewModel(application: Application) : AndroidViewModel(applicat
             it.toUi()
         }
 
-
         categoryRepository.getAllCategories().onEach { listCate ->
             listCate.forEach {
                 categories.add(it.toCategoryUi())
             }
         }.launchIn(viewModelScope)
-
-        if (accounts.isEmpty()) {
-
-
-
-        }
-
-        if (categories.isEmpty()) {
-            categoryRepository.insert(
-                CategoryEntity(
-                    name = "Alimentación",
-                    type = CategoryEntityType.EXPENSE,
-                    color = 0xFFFF7043, // Naranja
-                    iconName = "restaurant"
-                )
-            )
-            categoryRepository.insert(
-                CategoryEntity(
-                    name = "Salario",
-                    type = CategoryEntityType.INCOME,
-                    color = 0xFF66BB6A, // Verde
-                    iconName = "attach_money"
-                )
-            )
-            categoryRepository.insert(
-                CategoryEntity(
-                    name = "Transporte",
-                    type = CategoryEntityType.EXPENSE,
-                    color = 0xFF42A5F5, // Azul
-                    iconName = "directions_car"
-                )
-            )
-            categoryRepository.insert(
-                CategoryEntity(
-                    name = "Freelance",
-                    type = CategoryEntityType.INCOME,
-                    color = 0xFFAB47BC, // Morado
-                    iconName = "work"
-                )
-            )
-            categoryRepository.insert(
-                CategoryEntity(
-                    name = "Entretenimiento",
-                    type = CategoryEntityType.EXPENSE,
-                    color = 0xFFFFCA28, // Amarillo
-                    iconName = "movie"
-                )
-            )
-            categoryRepository.getAllCategories().onEach { listCate ->
-                listCate.forEach {
-                    categories.add(it.toCategoryUi())
-                }
-            }.launchIn(viewModelScope)
-        }
-
-
-        Log.i("mensajes", categories.toString())
-        Log.i("mensajes", accounts.toString())
     }
-
 
     fun addNewTransaction(transaction: TransactionUi) {
         transactionRepository.insertTransaction(transaction.toEntityModel())
     }
 
-
 }
-
-data class TransactionUiState(
-    val listCategories: List<CategoryUi> = emptyList(),
-)

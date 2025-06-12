@@ -1,5 +1,6 @@
 package software.mys.guardaditoapp.ui.screen.tabs
 
+import android.app.Application
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -36,38 +37,31 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.lifecycle.viewmodel.compose.viewModel
 import software.mys.guardaditoapp.ui.models.CategoryUi
 import software.mys.guardaditoapp.ui.models.CategoryUiType
-import software.mys.guardaditoapp.ui.viewmodel.CategoryViewModel
 import software.mys.guardaditoapp.ui.screen.components.EmptyCategoriesMessage
 
 
 @Composable
-fun CategoriesTab(viewmodel: CategoryViewModel) {
-
-
-    val uiState by viewmodel.uiState.collectAsState()
-    var showDialog by remember { mutableStateOf(false) }
-
+fun CategoriesTab(
+    listCategories: List<CategoryUi> = listOf(),
+    onDeleteCategory: (CategoryUi) -> Unit = {},
+    onClickItem: (CategoryUi) -> Unit = {}
+) {
     TabsExpenseAndIncome(
         modifier = Modifier,
-        incomeCategories = uiState.listCategories.filter { it.type == CategoryUiType.INCOME },
-        expenseCategories = uiState.listCategories.filter { it.type == CategoryUiType.EXPENSE },
-        onClickDeleteCategory = { category ->
-            viewmodel.deleteCategory(category)
-        }
+        incomeCategories = listCategories.filter { it.type == CategoryUiType.INCOME },
+        expenseCategories = listCategories.filter { it.type == CategoryUiType.EXPENSE },
+        onClickDeleteCategory = onDeleteCategory,
+        onClickItem = onClickItem
     )
-    // Mostrar el diálogo si showDialog es true
-    if (showDialog) {
-        FullScreenDialog(
-            onDismiss = { showDialog = false } // Cerrar el diálogo
-        )
-    }
 }
 
 @Composable
@@ -75,7 +69,8 @@ fun TabsExpenseAndIncome(
     modifier: Modifier,
     incomeCategories: List<CategoryUi> = listOf(),
     expenseCategories: List<CategoryUi> = listOf(),
-    onClickDeleteCategory: (CategoryUi) -> Unit = {}
+    onClickDeleteCategory: (CategoryUi) -> Unit = {},
+    onClickItem: (CategoryUi) -> Unit = {}
 ) {
     Column(
         modifier = modifier
@@ -106,7 +101,9 @@ fun TabsExpenseAndIncome(
                         incomeCategories.forEach { category ->
                             CategoryItem(
                                 category,
-                                onDelete = { category -> onClickDeleteCategory(category) })
+                                onDelete = { category -> onClickDeleteCategory(category) },
+                                onClickItem = onClickItem
+                            )
                         }
                     }
 
@@ -117,7 +114,11 @@ fun TabsExpenseAndIncome(
                         EmptyCategoriesMessage(type = CategoryUiType.EXPENSE)
                     } else {
                         expenseCategories.forEach { category ->
-                            CategoryItem(category)
+                            CategoryItem(
+                                category,
+                                onDelete = { category -> onClickDeleteCategory(category) },
+                                onClickItem = onClickItem
+                            )
                         }
                     }
 
@@ -129,70 +130,18 @@ fun TabsExpenseAndIncome(
 }
 
 @Composable
-fun FullScreenDialog(onDismiss: () -> Unit) {
-    Dialog(
-        onDismissRequest = onDismiss,
-        properties = DialogProperties(usePlatformDefaultWidth = false) // Diálogo de pantalla completa
-    ) {
-        Surface(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            shape = MaterialTheme.shapes.large
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
-            ) {
-                // Título del diálogo
-                Text(
-                    text = "Nueva Categoría",
-                    style = MaterialTheme.typography.headlineMedium,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
-
-                // Campo de texto para el nombre de la categoría
-                var categoryName by remember { mutableStateOf("") }
-                OutlinedTextField(
-                    value = categoryName,
-                    onValueChange = { categoryName = it },
-                    label = { Text("Nombre de la categoría") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 16.dp)
-                )
-
-                // Botón para guardar la categoría
-                Button(
-                    onClick = {
-                        // Aquí puedes guardar la categoría
-                        onDismiss() // Cerrar el diálogo después de guardar
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("Guardar")
-                }
-
-                // Botón para cancelar
-                TextButton(
-                    onClick = onDismiss,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("Cancelar")
-                }
-            }
-        }
-    }
-}
-
-
-
-
-@Composable
-fun CategoryItem(category: CategoryUi, onDelete: (CategoryUi) -> Unit = {}) {
+fun CategoryItem(
+    category: CategoryUi,
+    onDelete: (CategoryUi) -> Unit = {},
+    onClickItem: (CategoryUi) -> Unit = {}
+) {
     Row(
-        horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable {
+                onClickItem(category)
+            },
         verticalAlignment = Alignment.CenterVertically
     ) {
         Row(

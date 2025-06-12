@@ -16,7 +16,6 @@ class AccountRepository(private val accountDao: AccountDao) {
     fun getAllAccounts(): List<AccountEntity> {
         return accountDao.getAll()
     }
-
     fun delete(account: AccountEntity) {
         accountDao.delete(account)
     } 
