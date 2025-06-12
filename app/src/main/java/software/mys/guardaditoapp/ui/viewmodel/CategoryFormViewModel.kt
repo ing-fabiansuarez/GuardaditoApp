@@ -12,59 +12,43 @@ import software.mys.guardaditoapp.ui.models.CategoryUi
 import software.mys.guardaditoapp.ui.models.CategoryUiType
 import androidx.compose.runtime.State
 import androidx.compose.ui.graphics.vector.ImageVector
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import software.mys.guardaditoapp.ui.util.AppColors
 import software.mys.guardaditoapp.ui.util.AppIcons
 
 // ui/viewmodel/CategoryFormViewModel.kt
 class CategoryFormViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val _uiState = mutableStateOf(CategoryFormState())
-    val uiState: State<CategoryFormState> = _uiState
+    private val _uiState = MutableStateFlow(CategoryFormState())
+    val uiState = _uiState.asStateFlow()
 
     init {
         Log.i("fabian", "CategoryFormViewModel")
     }
 
     fun setName(name: String) {
-        _uiState.value = _uiState.value.copy(name = name)
+        _uiState.value =
+            _uiState.value.copy(categoryUi = _uiState.value.categoryUi.copy(name = name))
     }
 
     fun setIcon(icon: ImageVector) {
-        _uiState.value = _uiState.value.copy(selectedIcon = icon)
+        _uiState.value =
+            _uiState.value.copy(categoryUi = _uiState.value.categoryUi.copy(icon = icon))
     }
 
     fun setType(type: CategoryUiType) {
-        _uiState.value = _uiState.value.copy(selectedType = type)
+        _uiState.value =
+            _uiState.value.copy(categoryUi = _uiState.value.categoryUi.copy(type = type))
     }
 
     fun setColor(color: Long) {
-        _uiState.value = _uiState.value.copy(selectedColor = color)
+        _uiState.value =
+            _uiState.value.copy(categoryUi = _uiState.value.categoryUi.copy(color = color))
     }
 
-    fun saveCategory() {
-        viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true)
-
-            try {
-                if (_uiState.value.name.isNotBlank()) {
-                    val category = CategoryUi(
-                        name = _uiState.value.name,
-                        type = _uiState.value.selectedType,
-                        color = _uiState.value.selectedColor,
-                        icon = _uiState.value.selectedIcon
-                    )
-                }
-            } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    error = "Error al guardar la categoría: ${e.message}"
-                )
-            }
-        }
-    }
-
-    fun dismissError() {
-        _uiState.value = _uiState.value.copy(error = null)
+    fun loadCategory(category: CategoryUi) {
+        _uiState.value = _uiState.value.copy(categoryUi = category)
     }
 }
 
@@ -74,8 +58,9 @@ data class CategoryFormState(
     val selectedColor: Long = AppColors.colors.first(),
     val selectedIcon: ImageVector = AppIcons.getAllIcons().first().second, // Nuevo campo
     val isLoading: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+    val categoryUi: CategoryUi = CategoryUi()
 ) {
     val isValid: Boolean
-        get() = name.isNotBlank() && error == null
+        get() = categoryUi.name.isNotBlank() && error == null
 }

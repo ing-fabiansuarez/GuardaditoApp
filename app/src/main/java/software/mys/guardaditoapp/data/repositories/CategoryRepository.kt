@@ -1,15 +1,18 @@
 package software.mys.guardaditoapp.data.repositories
 
 import kotlinx.coroutines.flow.Flow
-import software.mys.guardaditoapp.data.local.AppDatabase
 import software.mys.guardaditoapp.data.local.daos.CategoryDao
 import software.mys.guardaditoapp.data.local.entities.CategoryEntity
 import software.mys.guardaditoapp.data.local.entities.CategoryEntityType
 
 class CategoryRepository(private val categoryDao: CategoryDao) {
 
-    fun insert(category: CategoryEntity) {
-        categoryDao.insert(category)
+    fun save(category: CategoryEntity) {
+        if (category.id == 0L) {
+            categoryDao.insert(category)
+        } else {
+            categoryDao.update(category)
+        }
     }
 
     fun getCatgoriesByType(type: CategoryEntityType): List<CategoryEntity> {

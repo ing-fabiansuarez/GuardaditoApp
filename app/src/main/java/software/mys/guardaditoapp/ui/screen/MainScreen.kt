@@ -62,6 +62,9 @@ fun MainScreen(onAccountClick: () -> Unit = {}) {
     var showTransactionForm by remember { mutableStateOf(false) }
     var typeTransaction by remember { mutableStateOf(TransactionTypeUi.INCOME) }
 
+    var selectedCategory by remember { mutableStateOf(uiState.categoryFormUi) }
+
+
     if (showCategoryForm) {
         CategoryForm(onCloseClick = {
             showCategoryForm = false
@@ -69,7 +72,7 @@ fun MainScreen(onAccountClick: () -> Unit = {}) {
             mainViewModel.addNewCategory(category)
             Toast.makeText(context, "Categoría guardada", Toast.LENGTH_SHORT).show()
             showCategoryForm = false
-        })
+        }, category = selectedCategory)
     }
 
     if (showTransactionForm) {
@@ -190,7 +193,12 @@ fun MainScreen(onAccountClick: () -> Unit = {}) {
                     onDeleteCategory = {
                         mainViewModel.deleteCategory(it)
                         Toast.makeText(context, "Categoría eliminada", Toast.LENGTH_SHORT).show()
-                    })
+                    },
+                    onClickItem = {
+                        selectedCategory = it
+                        showCategoryForm = true
+                    }
+                )
             }
         }
     }

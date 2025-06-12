@@ -35,6 +35,7 @@ import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -53,22 +54,25 @@ import software.mys.guardaditoapp.ui.util.AppColors
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun CategoryForm(
-    viewModel: CategoryFormViewModel = viewModel(),
     onCloseClick: () -> Unit = {},
-    onSaveComplete: (CategoryUi) -> Unit = {}
+    onSaveComplete: (CategoryUi) -> Unit = {},
+    category: CategoryUi = CategoryUi()
 ) {
+    val viewModel: CategoryFormViewModel = viewModel()
+    viewModel.loadCategory(category)
+
     ModalBottomSheet(
         onDismissRequest = onCloseClick
     ) {
-        val uiState by viewModel.uiState
+        val uiState by viewModel.uiState.collectAsState()
 
         Column(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            Text("Nueva Categoria", style = MaterialTheme.typography.titleLarge)
+            Text("Categoria ${uiState.categoryUi.name}", style = MaterialTheme.typography.titleLarge)
             OutlinedTextField(
-                value = uiState.name,
+                value = uiState.categoryUi.name,
                 onValueChange = viewModel::setName,
                 label = { Text("Nombre") },
                 modifier = Modifier.fillMaxWidth(),
@@ -76,28 +80,24 @@ fun CategoryForm(
             )
             InputCategoryType(
                 modifier = Modifier.fillMaxWidth(),
-                selectedType = uiState.selectedType,
+                selectedType = uiState.categoryUi.type,
                 onTypeSelected = { type: CategoryUiType -> viewModel.setType(type) }
             )
             InputColor(onColorSelected = { colorValue ->
                 viewModel.setColor(colorValue)
-            }, selectedColor = uiState.selectedColor)
+            }, selectedColor = uiState.categoryUi.color)
 
             InputIcon(onIconSelected = { icon: ImageVector ->
                 viewModel.setIcon(icon)
-            }, selectedIcon = uiState.selectedIcon)
+            }, selectedIcon = uiState.categoryUi.icon)
 
             // Botón Guardar
             Button(
                 onClick = {
                     onSaveComplete(
-                        CategoryUi(
-                            name = uiState.name,
-                            type = uiState.selectedType,
-                            color = uiState.selectedColor,
-                            icon = uiState.selectedIcon
-                        )
+                        uiState.categoryUi
                     )
+                    viewModel.loadCategory(CategoryUi())
                     onCloseClick()
                 },
                 modifier = Modifier
@@ -157,7 +157,7 @@ fun InputIcon(onIconSelected: (ImageVector) -> Unit, selectedIcon: ImageVector) 
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
- fun InputColor(onColorSelected: (Long) -> Unit = {}, selectedColor: Long) {
+fun InputColor(onColorSelected: (Long) -> Unit = {}, selectedColor: Long) {
     Text("Color", style = MaterialTheme.typography.bodyMedium)
     FlowRow(
         modifier = Modifier.fillMaxWidth(),

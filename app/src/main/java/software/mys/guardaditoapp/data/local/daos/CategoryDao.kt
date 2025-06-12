@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 import software.mys.guardaditoapp.data.local.entities.CategoryEntity
 import software.mys.guardaditoapp.data.local.entities.CategoryEntityType
@@ -15,7 +16,10 @@ interface CategoryDao {
     @Insert
     fun insert(category: CategoryEntity): Long
 
-    @Query("SELECT * FROM categories ORDER BY name ASC")
+    @Update
+    fun update(category: CategoryEntity)
+
+    @Query("SELECT * FROM categories ORDER BY id ASC")
     fun getAll(): Flow<List<CategoryEntity>>
 
     @Query("SELECT * FROM categories WHERE type = :type ORDER BY name ASC")

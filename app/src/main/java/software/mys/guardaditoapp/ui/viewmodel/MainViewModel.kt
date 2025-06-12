@@ -21,8 +21,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _uiState = MutableStateFlow(MainUiState())
     val uiState = _uiState.asStateFlow()
 
+
     fun addNewCategory(category: CategoryUi) {
-        categoryRepository.insert(category.toEntity())
+        categoryRepository.save(category.toEntity())
     }
 
     fun loadAllCategories() {
@@ -39,8 +40,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun deleteCategory(category: CategoryUi) {
         categoryRepository.deleteCategory(category.toEntity())
     }
+
+
 }
 
 data class MainUiState(
-    val listCategories: List<CategoryUi> = emptyList()
+    val listCategories: List<CategoryUi> = emptyList(),
+    val categoryFormUi: CategoryUi = CategoryUi()
 )

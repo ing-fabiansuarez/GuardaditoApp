@@ -14,7 +14,7 @@ data class CategoryUi(
     val id: Long = 0,
     val name: String = "",
     val color: Long = 0xFF2196F3,
-    val type: CategoryUiType = CategoryUiType.EXPENSE,
+    val type: CategoryUiType = CategoryUiType.INCOME,
     val icon: ImageVector = Icons.Default.Category
 )
 
