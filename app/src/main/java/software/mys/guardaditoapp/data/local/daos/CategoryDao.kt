@@ -22,6 +22,9 @@ interface CategoryDao {
     @Query("SELECT * FROM categories ORDER BY id ASC")
     fun getAll(): Flow<List<CategoryEntity>>
 
+    @Query("SELECT * FROM categories ORDER BY id ASC")
+    fun getAllList(): List<CategoryEntity>
+
     @Query("SELECT * FROM categories WHERE type = :type ORDER BY name ASC")
     fun getCategoriesByType(type: CategoryEntityType): List<CategoryEntity>
 

@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import software.mys.guardaditoapp.data.local.daos.TransactionDao
 import software.mys.guardaditoapp.data.local.daos.AccountDao
 import software.mys.guardaditoapp.data.local.daos.CategoryDao
@@ -20,6 +21,7 @@ import software.mys.guardaditoapp.data.local.entities.TransactionEntity
     ],
     version = 1
 )
+@TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun categoryDao(): CategoryDao
     abstract fun accountDao(): AccountDao

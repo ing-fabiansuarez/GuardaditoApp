@@ -2,16 +2,17 @@ package software.mys.guardaditoapp.ui.models
 
 import software.mys.guardaditoapp.data.local.entities.TransactionEntity
 import software.mys.guardaditoapp.data.local.entities.TransactionTypeEntity
+import java.math.BigDecimal
 
 data class TransactionUi(
     val id: Long = 0,
-    val amount: Double,
-    val type: TransactionTypeUi, // Enum (INCOME, EXPENSE, TRANSFER)
+    val amount: BigDecimal = BigDecimal("0.0"),
+    val type: TransactionTypeUi = TransactionTypeUi.INCOME, // Enum (INCOME, EXPENSE, TRANSFER)
     val accountId: Long, // FK to Account
-    val categoryId: Long?, // FK to Category (optional for transfers)
-    val description: String,
-    val date: String,
-    val targetAccountId: Long? // Only for transfers
+    val categoryId: Long, // FK to Category (optional for transfers)
+    val description: String = "",
+    val date: String = "",
+    val targetAccountId: Long? =null // Only for transfers
 )
 
 fun TransactionUi.toEntityModel(): TransactionEntity {
@@ -30,11 +31,13 @@ fun TransactionUi.toEntityModel(): TransactionEntity {
 enum class TransactionTypeUi {
     INCOME,
     EXPENSE,
+    TRANSFER
 }
 
 fun TransactionTypeUi.toEntityModel(): TransactionTypeEntity {
     return when (this) {
         TransactionTypeUi.INCOME -> TransactionTypeEntity.INCOME
         TransactionTypeUi.EXPENSE -> TransactionTypeEntity.EXPENSE
+        TransactionTypeUi.TRANSFER -> TransactionTypeEntity.TRANSFER
     }
 }

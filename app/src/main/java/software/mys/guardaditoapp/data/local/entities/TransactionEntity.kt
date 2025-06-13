@@ -5,25 +5,40 @@ import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import software.mys.guardaditoapp.ui.models.TransactionTypeUi
 import software.mys.guardaditoapp.ui.models.TransactionUi
+import java.math.BigDecimal
 
 @Entity(
     tableName = "transactions",
-    foreignKeys = [ForeignKey(
-        entity = CategoryEntity::class,
-        parentColumns = ["id"],
-        childColumns = ["categoryId"],
-        onDelete = ForeignKey.SET_NULL
-    )]
+    foreignKeys = [
+        ForeignKey(
+            entity = CategoryEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["categoryId"],
+            onDelete = ForeignKey.SET_NULL
+        ),
+        ForeignKey(
+            entity = AccountEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["accountId"],
+            onDelete = ForeignKey.SET_NULL
+        ),
+        ForeignKey(
+            entity = AccountEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["targetAccountId"],
+            onDelete = ForeignKey.SET_NULL
+        )
+    ]
 )
 data class TransactionEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val amount: Double,
-    val type: TransactionTypeEntity, // Enum (INCOME, EXPENSE, TRANSFER)
-    val accountId: Long, // FK to Account
-    val categoryId: Long?, // FK to Category (optional for transfers)
-    val description: String,
-    val date: String,
-    val targetAccountId: Long? // Only for transfers
+    val amount: BigDecimal = BigDecimal("0.0"),
+    val type: TransactionTypeEntity,
+    val accountId: Long, // <- ahora nullable
+    val categoryId: Long,
+    val description: String = "",
+    val date: String = "",
+    val targetAccountId: Long? = null
 )
 
 fun TransactionEntity.toUiModel(): TransactionUi {
@@ -48,6 +63,6 @@ fun TransactionTypeEntity.toUiModel(): TransactionTypeUi {
     return when (this) {
         TransactionTypeEntity.INCOME -> TransactionTypeUi.INCOME
         TransactionTypeEntity.EXPENSE -> TransactionTypeUi.EXPENSE
-        TransactionTypeEntity.TRANSFER -> TransactionTypeUi.EXPENSE
+        TransactionTypeEntity.TRANSFER -> TransactionTypeUi.TRANSFER
     }
 }

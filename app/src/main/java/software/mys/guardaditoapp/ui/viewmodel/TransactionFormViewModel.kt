@@ -13,12 +13,17 @@ import kotlinx.coroutines.flow.update
 import software.mys.guardaditoapp.data.local.AppDatabase
 import software.mys.guardaditoapp.data.local.entities.TransactionEntity
 import software.mys.guardaditoapp.data.local.entities.TransactionTypeEntity
+import software.mys.guardaditoapp.data.local.entities.toCategoryUi
 import software.mys.guardaditoapp.data.local.entities.toUi
 import software.mys.guardaditoapp.data.repositories.AccountRepository
 import software.mys.guardaditoapp.data.repositories.CategoryRepository
+import software.mys.guardaditoapp.data.repositories.TransactionRepository
 import software.mys.guardaditoapp.ui.models.AccountUi
 import software.mys.guardaditoapp.ui.models.CategoryUi
 import software.mys.guardaditoapp.ui.models.TransactionTypeUi
+import software.mys.guardaditoapp.ui.models.TransactionUi
+import software.mys.guardaditoapp.ui.models.toEntityModel
+import java.math.BigDecimal
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -46,6 +51,7 @@ class TransactionFormViewModel(application: Application) : AndroidViewModel(appl
     val db = AppDatabase.getInstance(application.applicationContext)
     val accountRepository = AccountRepository(db.accountDao())
     val categoryRepository = CategoryRepository(db.categoryDao())
+    val transactionRepository = TransactionRepository(db.transactionDao(), db.accountDao())
 
     init {
         loadInitialData()
@@ -56,6 +62,9 @@ class TransactionFormViewModel(application: Application) : AndroidViewModel(appl
             it.copy(
                 accounts = accountRepository.getAllAccounts().map {
                     it.toUi()
+                },
+                categories = categoryRepository.getAllCategoriesList().map {
+                    it.toCategoryUi()
                 }
             )
         }
@@ -90,7 +99,6 @@ class TransactionFormViewModel(application: Application) : AndroidViewModel(appl
     }
 
     private fun validateAmount(amount: String): String? {
-
         return when {
             amount.isBlank() -> "Amount cannot be empty"
             amount.toDoubleOrNull() == null -> "Amount must be a number"
@@ -108,7 +116,8 @@ class TransactionFormViewModel(application: Application) : AndroidViewModel(appl
     }
 
     private fun validateDetail(detail: String): String? {
-        return if (detail.isBlank()) "Detail cannot be empty" else null
+        //return if (detail.isBlank()) "Detail cannot be empty" else null
+        return null
     }
 
     private fun validateDate(date: String): String? {
@@ -134,6 +143,10 @@ class TransactionFormViewModel(application: Application) : AndroidViewModel(appl
                 categoryError = validateCategory(it.category),
                 detailError = validateDetail(it.detail),
                 dateError = validateDate(it.date),
+            )
+        }
+        _uiState.update {
+            it.copy(
                 formValid = it.amountError == null && it.accountError == null &&
                         it.categoryError == null && it.detailError == null &&
                         it.dateError == null
@@ -142,10 +155,21 @@ class TransactionFormViewModel(application: Application) : AndroidViewModel(appl
     }
 
 
-    fun onSave(onSaveSuccesful: (TransactionFormUiState) -> Unit): Unit {
+    fun onSave(transactionType: TransactionTypeUi, onSaveSuccess: () -> Unit) {
         validateForm()
         if (uiState.value.formValid) {
-            onSaveSuccesful(uiState.value)
+            transactionRepository.insertTransaction(
+                TransactionUi(
+                    amount = uiState.value.amount.toBigDecimalOrNull() ?: BigDecimal("0.0"),
+                    type = transactionType,
+                    accountId = uiState.value.account.id,
+                    categoryId = uiState.value.category.id,
+                    description = uiState.value.detail,
+                    date = uiState.value.date,
+                    targetAccountId = null
+                ).toEntityModel()
+            )
+            onSaveSuccess()
         }
     }
 }

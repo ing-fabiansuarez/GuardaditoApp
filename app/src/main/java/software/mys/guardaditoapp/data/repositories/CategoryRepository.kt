@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import software.mys.guardaditoapp.data.local.daos.CategoryDao
 import software.mys.guardaditoapp.data.local.entities.CategoryEntity
 import software.mys.guardaditoapp.data.local.entities.CategoryEntityType
+import software.mys.guardaditoapp.data.local.entities.TransactionTypeEntity
 
 class CategoryRepository(private val categoryDao: CategoryDao) {
 
@@ -27,8 +28,12 @@ class CategoryRepository(private val categoryDao: CategoryDao) {
         categoryDao.delete(category)
     }
 
-    fun getCategoriesByTypeFlow(type: CategoryEntityType): Flow<List<CategoryEntity>> {
-        return categoryDao.getCategoriesByTypeFlow(type)
+    fun getCategoriesByType(type: CategoryEntityType): List<CategoryEntity> {
+        return categoryDao.getCategoriesByType(type)
+    }
+
+    fun getAllCategoriesList(): List<CategoryEntity> {
+        return categoryDao.getAllList()
     }
 
 }
