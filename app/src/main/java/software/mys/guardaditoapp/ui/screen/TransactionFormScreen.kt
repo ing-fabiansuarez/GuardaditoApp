@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Savings
 import androidx.compose.material3.Button
@@ -36,15 +35,17 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import software.mys.guardaditoapp.ui.models.CategoryUi
 import software.mys.guardaditoapp.ui.models.CategoryUiType
 import software.mys.guardaditoapp.ui.models.TransactionTypeUi
-import software.mys.guardaditoapp.ui.models.TransactionUi
 import software.mys.guardaditoapp.ui.screen.components.AccountSelectorDialog
 import software.mys.guardaditoapp.ui.screen.components.CategorySelectorDialog
 import software.mys.guardaditoapp.ui.screen.components.DateSelectorDialog
 import software.mys.guardaditoapp.ui.viewmodel.TransactionFormViewModel
-import java.math.BigDecimal
+import androidx.compose.ui.res.colorResource
+
+import software.mys.guardaditoapp.ui.screen.components.topbars.TransactionTopAppBar
+import software.mys.guardaditoapp.R
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,19 +62,57 @@ fun TransactionFormScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
-                    }
-                },
-                title = {
-                    Text(transactionType.name.lowercase())
-                },
-            )
+            when (transactionType) {
+                TransactionTypeUi.INCOME -> TransactionTopAppBar(
+                    onBackClick = onBackClick,
+                    onSaveClick = {
+                        transactionFormViewModel.onSave(
+                            transactionType = transactionType,
+                            onSaveSuccess = {
+                                Toast.makeText(
+                                    context,
+                                    "Transaccion guardada",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                onSaveClick()
+                            })
+                    },
+                    containerColor = colorResource(id = R.color.green_income),
+                    canSave = uiState.formValid,
+                    title = "Nuevo Ingreso",
+                    subtitle = "Registra tus ingresos"
+                )
+
+                TransactionTypeUi.EXPENSE -> TransactionTopAppBar(
+                    onBackClick = onBackClick,
+                    onSaveClick = {
+                        transactionFormViewModel.onSave(
+                            transactionType = transactionType,
+                            onSaveSuccess = {
+                                Toast.makeText(
+                                    context,
+                                    "Transaccion guardada",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                onSaveClick()
+                            })
+                    },
+                    containerColor = colorResource(id = R.color.red_expense),
+                    canSave = uiState.formValid,
+                    title = "Nuevo Gasto",
+                    subtitle = "Registra tus ingresos"
+                )
+
+                TransactionTypeUi.TRANSFER -> {}
+            }
+
+
         }
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
+            // Versión alternativa con gradiente personalizado
+
+
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -205,16 +244,6 @@ fun TransactionFormScreen(
                             .padding(top = 8.dp),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        // Botón Cancelar
-                        OutlinedButton(
-                            onClick = onBackClick,
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(end = 4.dp),
-                            shape = RoundedCornerShape(12.dp)
-                        ) {
-                            Text("Cancelar")
-                        }
 
                         // Botón Guardar
                         Button(
@@ -243,4 +272,3 @@ fun TransactionFormScreen(
         }
     }
 }
-

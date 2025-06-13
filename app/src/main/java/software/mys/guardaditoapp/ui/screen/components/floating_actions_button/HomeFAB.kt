@@ -22,7 +22,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
+import software.mys.guardaditoapp.R
 
 
 @Composable
@@ -43,7 +45,7 @@ fun HomeFAB(
                 Text("Transferencia", modifier = Modifier.padding(end = 8.dp))
                 FloatingActionButton(
                     onClick = onClickTransfer,
-                    containerColor = Color(0xFF2196F3)
+                    containerColor = colorResource(id = R.color.blue_transfer)
                 ) {
                     Icon(
                         Icons.Default.SwapHoriz,
@@ -57,7 +59,7 @@ fun HomeFAB(
                 Text("Ingresos", modifier = Modifier.padding(end = 8.dp))
                 FloatingActionButton(
                     onClick = onClickIncome,
-                    containerColor = Color(0xFF4CAF50)
+                    containerColor = colorResource(id = R.color.green_income)
                 ) {
                     Icon(
                         Icons.Default.AttachMoney,
@@ -72,7 +74,7 @@ fun HomeFAB(
                 Text("Gastos", modifier = Modifier.padding(end = 8.dp))
                 FloatingActionButton(
                     onClick = onClickExpense,
-                    containerColor = Color(0xFFF44336)
+                    containerColor = colorResource(id = R.color.red_expense)
                 ) {
                     Icon(
                         Icons.Default.MoneyOff,
