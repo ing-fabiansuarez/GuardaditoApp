@@ -1,4 +1,4 @@
-package software.mys.guardaditoapp.ui.screen.components.topbars
+package software.mys.guardaditoapp.ui.screen.layout.topbars
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background

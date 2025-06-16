@@ -1,23 +1,21 @@
-package software.mys.guardaditoapp.ui.screen.components
+package software.mys.guardaditoapp.ui.screen.components.hometab
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material3.Card
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -32,56 +30,67 @@ fun DailyReportCard(
     transactions: List<Transaction> = emptyList()
 ) {
     var expanded by remember { mutableStateOf(false) }
-
-    Column(
+    Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .background(Color(0xFFF4F2F7), RoundedCornerShape(16.dp))
-            .clickable { expanded = !expanded }
-            .padding(16.dp)
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Column {
-                Text(text = dayName, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                Text(text = date, fontSize = 14.sp, color = Color.Gray)
-            }
-            Column(horizontalAlignment = Alignment.End) {
-                Text(text = income, color = Color(0xFF00994C), fontWeight = FontWeight.Bold)
-                Text(text = expenses, color = Color(0xFFCC0000), fontWeight = FontWeight.Bold)
-            }
-            Icon(
-                imageVector = if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-                contentDescription = null
-            )
-        }
 
-        if (expanded) {
-            Spacer(modifier = Modifier.height(8.dp))
-            transactions.forEach {
-                TransactionItem(transaction = it)
-            }
-            Spacer(modifier = Modifier.height(8.dp))
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+            // .background(Color(0xFFF4F2F7), RoundedCornerShape(16.dp))
+
+        ) {
             Row(
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text("Ingresos", fontWeight = FontWeight.Bold)
-                Text(income, color = Color(0xFF00994C), fontWeight = FontWeight.Bold)
+                Column {
+                    Text(text = dayName, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    Text(text = date, fontSize = 14.sp, color = Color.Gray)
+                }
+                Column(horizontalAlignment = Alignment.End) {
+                    Text(text = income, color = Color(0xFF00994C), fontWeight = FontWeight.Bold)
+                    Text(text = expenses, color = Color(0xFFCC0000), fontWeight = FontWeight.Bold)
+                }
+                IconButton(onClick = {
+                    expanded = !expanded
+                }) {
+                    Icon(
+                        imageVector = if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                        contentDescription = null
+                    )
+                }
+
             }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text("Gastos", fontWeight = FontWeight.Bold)
-                Text(expenses, color = Color(0xFFCC0000), fontWeight = FontWeight.Bold)
+
+            if (expanded) {
+                Spacer(modifier = Modifier.height(8.dp))
+                transactions.forEach {
+                    TransactionItem(transaction = it)
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text("Ingresos", fontWeight = FontWeight.Bold)
+                    Text(income, color = Color(0xFF00994C), fontWeight = FontWeight.Bold)
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text("Gastos", fontWeight = FontWeight.Bold)
+                    Text(expenses, color = Color(0xFFCC0000), fontWeight = FontWeight.Bold)
+                }
             }
         }
     }
+
 }
 
 @Composable

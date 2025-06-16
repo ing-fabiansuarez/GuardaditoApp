@@ -18,11 +18,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import software.mys.guardaditoapp.ui.screen.components.NavigationBottomAppBar
+import software.mys.guardaditoapp.ui.screen.layout.NavigationBottomAppBar
 import software.mys.guardaditoapp.Routes
 import software.mys.guardaditoapp.ui.models.TransactionTypeUi
-import software.mys.guardaditoapp.ui.screen.components.floating_actions_button.CategoryFAB
-import software.mys.guardaditoapp.ui.screen.components.floating_actions_button.HomeFAB
+import software.mys.guardaditoapp.ui.screen.layout.floating_actions_button.CategoryFAB
+import software.mys.guardaditoapp.ui.screen.layout.floating_actions_button.HomeFAB
 import software.mys.guardaditoapp.ui.screen.form.CategoryForm
 import software.mys.guardaditoapp.ui.screen.tabs.CategoriesTab
 import software.mys.guardaditoapp.ui.screen.tabs.HomeTab
@@ -80,7 +80,8 @@ fun MainScreen(
         ) {
             composable(route = Routes.HomeTab.route) {
                 HomeTab(
-                    onAccountClick = { onAccountClick() })
+                    onAccountClick = onAccountClick
+                )
             }
             composable(route = Routes.CategoriesTab.route) {
                 mainViewModel.loadAllCategories()

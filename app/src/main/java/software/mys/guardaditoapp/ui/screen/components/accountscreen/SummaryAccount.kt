@@ -1,4 +1,4 @@
-package software.mys.guardaditoapp.ui.screen.components
+package software.mys.guardaditoapp.ui.screen.components.accountscreen
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement

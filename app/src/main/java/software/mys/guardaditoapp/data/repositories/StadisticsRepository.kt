@@ -1,7 +1,5 @@
 package software.mys.guardaditoapp.data.repositories
 
-import software.mys.guardaditoapp.data.local.daos.AccountDao
-import software.mys.guardaditoapp.data.local.daos.CategoryDao
 import software.mys.guardaditoapp.data.local.daos.StadisticsDao
 
 class StadisticsRepository(
@@ -9,5 +7,9 @@ class StadisticsRepository(
 ) {
     fun getTotalBalance(): Double {
         return stadisticsDao.getTotalBalance()
+    }
+
+    fun getTotalAmountByType(type: String): Double {
+        return stadisticsDao.getTotalAmountByType(type)
     }
 }
