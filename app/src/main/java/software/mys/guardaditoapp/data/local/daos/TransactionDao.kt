@@ -7,4 +7,7 @@ import software.mys.guardaditoapp.data.local.entities.TransactionEntity
 interface TransactionDao {
     @Insert
     fun insertMovement(transaction: TransactionEntity): Long
+
+    @Query("SELECT * FROM transactions WHERE date LIKE :month || '%'")
+    suspend fun getTransactionsByMonth(month: String): List<TransactionEntity>
 }

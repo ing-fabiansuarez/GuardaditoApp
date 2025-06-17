@@ -9,12 +9,18 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.CalendarToday
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -29,7 +35,8 @@ fun MounthSummaryPreview() {
 }
 
 @Composable
-fun MounthSummary(mounth: String, year: String) {
+fun MounthSummary(mounth: String, year: String, onExpandClick: (Boolean) -> Unit = {}) {
+    var expanded by remember { mutableStateOf(false) }
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
@@ -43,12 +50,20 @@ fun MounthSummary(mounth: String, year: String) {
             Text("$mounth $year", fontSize = 18.sp)
         }
         IconButton(
-            onClick = {},
+            onClick = {
+                expanded = !expanded
+                onExpandClick(expanded)
+            },
             colors = IconButtonDefaults.iconButtonColors(
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
             )
         ) {
-            Icon(Icons.Filled.ArrowDropDown, null)
+            Icon(
+                imageVector = if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                contentDescription = null
+            )
+
         }
+
     }
 }

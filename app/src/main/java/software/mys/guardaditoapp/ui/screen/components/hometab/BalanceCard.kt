@@ -1,6 +1,7 @@
 package software.mys.guardaditoapp.ui.screen.components.hometab
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,12 +18,17 @@ import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Balance
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,18 +36,22 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import software.mys.guardaditoapp.formatNumberFromDoubleToString
+import java.math.BigDecimal
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BalanceCard(
     saldoTotal: Double = 0.0,
-    incomeTotal: Double = 0.0,
-    expenseTotal: Double = 0.0,
+    incomeTotal: BigDecimal = BigDecimal(0.0),
+    expenseTotal: BigDecimal = BigDecimal(0.0),
     onAccountClick: () -> Unit = {},
     mounth: String,
     year: String
 ) {
+    var isBalanceVisible by rememberSaveable { mutableStateOf(true) }
+
     Card(
         modifier = Modifier
             .padding(8.dp)
@@ -56,9 +66,20 @@ fun BalanceCard(
             ) {
                 Column {
                     Text("Saldo total", color = Color.Gray)
-                    Text("${saldoTotal}", fontSize = 28.sp, fontWeight = FontWeight.Bold)
+                    Text(
+                        if (isBalanceVisible) "$ ${formatNumberFromDoubleToString(saldoTotal)}" else "$ ****.**",
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
-                Icon(Icons.Filled.Visibility, contentDescription = null, tint = Color.Gray)
+                Icon(
+                    imageVector = if (isBalanceVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                    contentDescription = if (isBalanceVisible) "Ocultar saldo" else "Mostrar saldo",
+                    modifier = Modifier.clickable {
+                        // Cambia el estado de visibilidad al hacer clic
+                        isBalanceVisible = !isBalanceVisible
+                    }
+                )
             }
             Spacer(modifier = Modifier.height(16.dp))
             Column(
@@ -77,19 +98,19 @@ fun BalanceCard(
                 BalanceItem(
                     icon = Icons.Default.ArrowUpward,
                     label = "Ingresos",
-                    amount = "$${incomeTotal}",
+                    amount = "$ ${formatNumberFromDoubleToString(incomeTotal)}",
                     color = Color.Green
                 )
                 BalanceItem(
                     icon = Icons.Default.ArrowDownward,
                     label = "Gastos",
-                    amount = "$${expenseTotal}",
+                    amount = "$ ${formatNumberFromDoubleToString(expenseTotal)}",
                     color = Color.Red
                 )
                 BalanceItem(
                     icon = Icons.Default.Balance,
                     label = "Balance",
-                    amount = "$0,00",
+                    amount = "$ ${formatNumberFromDoubleToString(incomeTotal - expenseTotal)}",
                     color = Color.Gray
                 )
             }

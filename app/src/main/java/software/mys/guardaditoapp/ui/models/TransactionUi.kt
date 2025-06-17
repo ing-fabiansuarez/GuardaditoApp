@@ -12,7 +12,9 @@ data class TransactionUi(
     val categoryId: Long, // FK to Category (optional for transfers)
     val description: String = "",
     val date: String = "",
-    val targetAccountId: Long? =null // Only for transfers
+    val targetAccountId: Long? = null, // Only for transfers
+    val amountUi: AccountUi = AccountUi(),
+    val categoryUi: CategoryUi = CategoryUi()
 )
 
 fun TransactionUi.toEntityModel(): TransactionEntity {

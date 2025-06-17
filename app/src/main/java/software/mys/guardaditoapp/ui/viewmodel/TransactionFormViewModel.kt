@@ -126,7 +126,7 @@ class TransactionFormViewModel(application: Application) : AndroidViewModel(appl
 
     private fun isValidDate(date: String): Boolean {
         return try {
-            val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+            val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
             sdf.isLenient = false
             sdf.parse(date)
             true

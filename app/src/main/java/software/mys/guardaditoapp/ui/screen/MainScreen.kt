@@ -31,8 +31,10 @@ import software.mys.guardaditoapp.ui.viewmodel.MainViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
-    onAccountClick: () -> Unit = {}, onTransactionClick: (TransactionTypeUi) -> Unit = {}
+    onAccountClick: () -> Unit = {}, onTransactionClick: (TransactionTypeUi) -> Unit = {},
+    refreshHomeTrigger: Boolean
 ) {
+
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
@@ -41,9 +43,10 @@ fun MainScreen(
     val mainViewModel: MainViewModel = viewModel()
     val uiState by mainViewModel.uiState.collectAsState()
 
+
+    //Esto es para la pantalla de formulario de categorías
     var showCategoryForm by remember { mutableStateOf(false) }
     var selectedCategory by remember { mutableStateOf(uiState.categoryFormUi) }
-
     if (showCategoryForm) {
         CategoryForm(onCloseClick = {
             showCategoryForm = false
@@ -80,7 +83,8 @@ fun MainScreen(
         ) {
             composable(route = Routes.HomeTab.route) {
                 HomeTab(
-                    onAccountClick = onAccountClick
+                    onAccountClick = onAccountClick,
+                    refreshTrigger = refreshHomeTrigger
                 )
             }
             composable(route = Routes.CategoriesTab.route) {

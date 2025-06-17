@@ -21,7 +21,7 @@ import software.mys.guardaditoapp.data.local.entities.TransactionEntity
     ],
     version = 1
 )
-@TypeConverters(Converters::class)
+@TypeConverters(BigDecimalConverters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun categoryDao(): CategoryDao
     abstract fun accountDao(): AccountDao

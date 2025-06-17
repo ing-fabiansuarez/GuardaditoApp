@@ -1,69 +1,92 @@
 package software.mys.guardaditoapp.ui.screen.tabs
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.CalendarToday
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import software.mys.guardaditoapp.ui.viewmodel.HomeTabViewModel
 import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.sp
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import software.mys.guardaditoapp.formatNumberFromDoubleToString
+import software.mys.guardaditoapp.getDayOfWeekInSpanish
+import software.mys.guardaditoapp.getMonthNameSpanish
+import software.mys.guardaditoapp.ui.models.TransactionTypeUi
+import software.mys.guardaditoapp.ui.models.TransactionUi
 import software.mys.guardaditoapp.ui.screen.components.hometab.BalanceCard
 import software.mys.guardaditoapp.ui.screen.components.hometab.DailyReportCard
 import software.mys.guardaditoapp.ui.screen.components.hometab.MounthSummary
-import software.mys.guardaditoapp.ui.screen.components.hometab.Transaction
 
 @Composable
-fun HomeTab(onAccountClick: () -> Unit = {}) {
+fun HomeTab(
+    onAccountClick: () -> Unit = {},
+    refreshTrigger: Boolean
+) {
     val viewModel: HomeTabViewModel = viewModel()
     val uiState by viewModel.uiState.collectAsState()
+    var expandedAll by remember { mutableStateOf(false) }
+
+    //Lo que hace esta funcion es que si la variable refreshTrigger cambia, se llama a la funcion refreshHomeTab()
+    LaunchedEffect(refreshTrigger) {
+        viewModel.refreshHomeTab()
+    }
 
     Column(
         modifier = Modifier
             .padding(8.dp)
+            .verticalScroll(rememberScrollState()) // Esto añade el scroll vertical
     ) {
         BalanceCard(
             saldoTotal = uiState.totalBalance,
             onAccountClick = onAccountClick,
-            incomeTotal = uiState.totalIncome,
-            expenseTotal = uiState.totalExpense,
+            incomeTotal = viewModel.getIncomeByMonthlyReport(),
+            expenseTotal = viewModel.getExpenseByMonthlyReport(),
             mounth = viewModel.getMonthName(),
-            year = uiState.selectedYear.toString()
+            year = uiState.selectedYear.toString(),
         )
-        MounthSummary(viewModel.getMonthName(), uiState.selectedYear.toString())
-
-        val sampleTransactions = listOf(
-            Transaction("Salario", "Mi banco", "$1.621.812,00", Color(0xFF00796B)),
-            Transaction("Pamplona Mercado", "Mi banco", "$350.000,00", Color(0xFF558B2F)),
-            Transaction("Arriendo", "Mi banco", "$759.200,00", Color(0xFFFBC02D)),
-            Transaction("Carro - Parqueadero Unab", "Mi banco", "$140.000,00", Color(0xFF303F9F)),
-            Transaction("Carro - Parqueadero Casa", "Mi banco", "$160.000,00", Color(0xFF303F9F))
+        MounthSummary(
+            viewModel.getMonthName(), uiState.selectedYear.toString(),
+            onExpandClick = {
+                expandedAll = it
+            }
         )
 
-        DailyReportCard(
-            date = "01 Abr. 2025",
-            dayName = "Martes",
-            income = "$1.621.812,00",
-            expenses = "$1.409.200,00",
-            transactions = sampleTransactions
-        )
+
+        uiState.monthlyReportByDay.forEach { (date, transactions: List<TransactionUi>) ->
+            // Split the date string into year, month, day
+            val parts = date.split("-")
+            val year = parts.getOrNull(0) ?: "0000"
+            val month = parts.getOrNull(1) ?: "00"
+            val day = parts.getOrNull(2) ?: "00"
+
+            val totalExpenses = transactions
+                .filter { it.type == TransactionTypeUi.EXPENSE }
+                .sumOf { it.amount }
+            val totalIncome =
+                transactions
+                    .filter { it.type == TransactionTypeUi.INCOME }
+                    .sumOf { it.amount }
+
+            DailyReportCard(
+                dayName = getDayOfWeekInSpanish(date),
+                income = "$ ${formatNumberFromDoubleToString(totalIncome)}",
+                expenses = "$ ${formatNumberFromDoubleToString(totalExpenses)}",
+                transactions = transactions,
+                day = day,
+                month = getMonthNameSpanish(month.toInt()),
+                year = year,
+                expandeded = expandedAll
+            )
+        }
+        Spacer(modifier = Modifier.height(70.dp))
     }
 }

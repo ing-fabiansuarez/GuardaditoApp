@@ -1,16 +1,17 @@
 package software.mys.guardaditoapp.ui.screen.components.hometab
 
+
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CardElevation
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -20,20 +21,95 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import software.mys.guardaditoapp.formatNumberFromDoubleToString
+import software.mys.guardaditoapp.ui.models.TransactionTypeUi
+import software.mys.guardaditoapp.ui.models.TransactionUi
+import java.math.BigDecimal
+
+@Preview(showBackground = true)
+@Composable
+fun DailyReportCardPreview() {
+    val transactions = listOf(
+        TransactionUi(
+            id = 1,
+            amount = BigDecimal("2500.00"),
+            type = TransactionTypeUi.INCOME,
+            accountId = 1,
+            categoryId = 4,
+            description = "Pago nómina Mayo 2025",
+            date = "2025-05-28"
+        ),
+        TransactionUi(
+            id = 2,
+            amount = BigDecimal("85.75"),
+            type = TransactionTypeUi.EXPENSE,
+            accountId = 3,
+            categoryId = 1,
+            description = "Compra semanal Walmart",
+            date = "2025-06-15"
+        ),
+        TransactionUi(
+            id = 3,
+            amount = BigDecimal("500.00"),
+            type = TransactionTypeUi.TRANSFER,
+            accountId = 1,
+            categoryId = 5,
+            description = "Ahorro mensual",
+            date = "2025-06-01",
+            targetAccountId = 2
+        ),
+        TransactionUi(
+            id = 4,
+            amount = BigDecimal("35.50"),
+            type = TransactionTypeUi.EXPENSE,
+            accountId = 1,
+            categoryId = 2,
+            description = "Gasolina",
+            date = "2025-06-10"
+        ),
+        TransactionUi(
+            id = 5,
+            amount = BigDecimal("1200.00"),
+            type = TransactionTypeUi.INCOME,
+            accountId = 2,
+            categoryId = 4,
+            description = "Proyecto diseño app",
+            date = "2025-05-20"
+        )
+    )
+
+    DailyReportCard(
+        day = "01",
+        month = "Abril",
+        year = "2025",
+        dayName = "Martes",
+        income = "$1.621.812,00",
+        expenses = "$1.409.200,00",
+        transactions = transactions,
+        expandeded = true
+    )
+}
 
 @Composable
 fun DailyReportCard(
-    date: String,
+    day: String,
     dayName: String,
+    month: String,
+    year: String,
     income: String,
     expenses: String,
-    transactions: List<Transaction> = emptyList()
+    transactions: List<TransactionUi> = emptyList(),
+    expandeded: Boolean = false
 ) {
     var expanded by remember { mutableStateOf(false) }
+    expanded = expandeded
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
+            .padding(8.dp),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 4.dp
+        )
 
     ) {
         Column(
@@ -41,30 +117,51 @@ fun DailyReportCard(
                 .fillMaxWidth()
                 .padding(16.dp)
             // .background(Color(0xFFF4F2F7), RoundedCornerShape(16.dp))
-
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Column {
-                    Text(text = dayName, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                    Text(text = date, fontSize = 14.sp, color = Color.Gray)
-                }
-                Column(horizontalAlignment = Alignment.End) {
-                    Text(text = income, color = Color(0xFF00994C), fontWeight = FontWeight.Bold)
-                    Text(text = expenses, color = Color(0xFFCC0000), fontWeight = FontWeight.Bold)
-                }
-                IconButton(onClick = {
-                    expanded = !expanded
-                }) {
-                    Icon(
-                        imageVector = if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-                        contentDescription = null
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = day,
+                        fontSize = 30.sp
                     )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Column {
+                        Text(text = dayName, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                        Text(text = "$month-$year", fontSize = 14.sp, color = Color.Gray)
+                    }
                 }
 
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    if (!expanded) {
+                        Column(horizontalAlignment = Alignment.End) {
+                            Text(
+                                text = income,
+                                color = Color(0xFF00994C),
+                            )
+                            Text(
+                                text = expenses,
+                                color = Color(0xFFCC0000),
+                            )
+                        }
+                    }
+
+                    IconButton(onClick = {
+                        expanded = !expanded
+                    }) {
+                        Icon(
+                            imageVector = if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                            contentDescription = null
+                        )
+                    }
+                }
             }
 
             if (expanded) {
@@ -77,15 +174,15 @@ fun DailyReportCard(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text("Ingresos", fontWeight = FontWeight.Bold)
-                    Text(income, color = Color(0xFF00994C), fontWeight = FontWeight.Bold)
+                    Text("Ingresos")
+                    Text(income, color = Color(0xFF00994C))
                 }
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text("Gastos", fontWeight = FontWeight.Bold)
-                    Text(expenses, color = Color(0xFFCC0000), fontWeight = FontWeight.Bold)
+                    Text("Gastos")
+                    Text(expenses, color = Color(0xFFCC0000))
                 }
             }
         }
@@ -94,7 +191,7 @@ fun DailyReportCard(
 }
 
 @Composable
-fun TransactionItem(transaction: Transaction) {
+fun TransactionItem(transaction: TransactionUi) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -103,45 +200,26 @@ fun TransactionItem(transaction: Transaction) {
     ) {
         Box(
             modifier = Modifier
-                .size(24.dp)
-                .background(transaction.iconColor, CircleShape)
-        )
+                .size(30.dp)
+                .padding(4.dp)
+                .background(Color(transaction.categoryUi.color), CircleShape)
+        ) {
+            Icon(transaction.categoryUi.icon, null)
+        }
         Spacer(modifier = Modifier.width(8.dp))
         Column(modifier = Modifier.weight(1f)) {
-            Text(transaction.title, fontWeight = FontWeight.Medium)
-            Text(transaction.account, fontSize = 12.sp, color = Color.Gray)
+            val text = ""
+
+            Text(
+                "${transaction.categoryUi.name} ${if (!transaction.description.isEmpty()) " * ${transaction.description}" else ""}",
+            )
+            Text(transaction.amountUi.name, fontSize = 12.sp, color = Color.Gray)
         }
         Text(
-            text = transaction.amount,
-            color = if (transaction.amount.startsWith("$-")) Color(0xFFCC0000) else Color(0xFF00994C),
-            fontWeight = FontWeight.Bold
+            text = "$ ${formatNumberFromDoubleToString(transaction.amount)}",
+            color = if (transaction.type == TransactionTypeUi.EXPENSE) Color(0xFFCC0000) else Color(
+                0xFF00994C
+            ),
         )
     }
-}
-
-data class Transaction(
-    val title: String,
-    val account: String,
-    val amount: String,
-    val iconColor: Color
-)
-
-@Preview(showBackground = true)
-@Composable
-fun DailyReportCardPreview() {
-    val sampleTransactions = listOf(
-        Transaction("Salario", "Mi banco", "$1.621.812,00", Color(0xFF00796B)),
-        Transaction("Pamplona Mercado", "Mi banco", "$350.000,00", Color(0xFF558B2F)),
-        Transaction("Arriendo", "Mi banco", "$759.200,00", Color(0xFFFBC02D)),
-        Transaction("Carro - Parqueadero Unab", "Mi banco", "$140.000,00", Color(0xFF303F9F)),
-        Transaction("Carro - Parqueadero Casa", "Mi banco", "$160.000,00", Color(0xFF303F9F))
-    )
-
-    DailyReportCard(
-        date = "01 Abr. 2025",
-        dayName = "Martes",
-        income = "$1.621.812,00",
-        expenses = "$1.409.200,00",
-        transactions = sampleTransactions
-    )
 }

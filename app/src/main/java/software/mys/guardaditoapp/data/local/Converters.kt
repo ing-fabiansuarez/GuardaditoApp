@@ -2,8 +2,9 @@ package software.mys.guardaditoapp.data.local
 
 import androidx.room.TypeConverter
 import java.math.BigDecimal
+import java.util.Date
 
-class Converters {
+class BigDecimalConverters {
     @TypeConverter
     fun fromBigDecimal(value: BigDecimal?): String? {
         return value?.toPlainString()

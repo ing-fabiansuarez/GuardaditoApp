@@ -1,6 +1,10 @@
 package software.mys.guardaditoapp
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -14,6 +18,10 @@ import software.mys.guardaditoapp.ui.screen.TransactionFormScreen
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
+
+    //la idea de esta variable es que se refresque el home si se agrega una nueva transaccion
+    var refreshHomeTrigger by remember { mutableStateOf(false) }
+
     NavHost(navController = navController, startDestination = Routes.Main.route) {
         composable(Routes.Main.route) {
             MainScreen(
@@ -24,7 +32,8 @@ fun AppNavigation() {
                             typeTransaction.name
                         )
                     )
-                }
+                },
+                refreshHomeTrigger = refreshHomeTrigger,
             )
         }
         composable(Routes.Accounts.route) {
@@ -42,7 +51,10 @@ fun AppNavigation() {
             TransactionFormScreen(
                 transactionType = transactionType,
                 onBackClick = { navController.popBackStack() },
-                onSaveClick = { navController.popBackStack() }
+                onSaveClick = {
+                    refreshHomeTrigger = !refreshHomeTrigger
+                    navController.popBackStack()
+                }
             )
         }
     }

@@ -37,7 +37,9 @@ fun DateSelectorDialog(
 
 ) {
     var mostrarSelectorFecha by remember { mutableStateOf(false) }
-    val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+    val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).apply {
+        timeZone = java.util.TimeZone.getTimeZone("UTC")
+    }
 
     val currentDate = remember {
         try {
