@@ -18,6 +18,7 @@ roomRuntime = "2.6.1"
 litertSupportApi = "1.2.0"
 constraintlayout = "2.2.1"
 roomRuntimeVersion = "2.7.1"
+material3Jvmstubs = "1.4.0-alpha15"
 
 [libraries]
 accompanist-flowlayout = { module = "com.google.accompanist:accompanist-flowlayout", version.ref = "accompanistFlowlayout" }
@@ -47,6 +48,7 @@ androidx-navigation-compose = { group = "androidx.navigation", name = "navigatio
 litert-support-api = { group = "com.google.ai.edge.litert", name = "litert-support-api", version.ref = "litertSupportApi" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 room-compiler-v271 = { module = "androidx.room:room-compiler", version.ref = "roomCompilerVersion" }
+androidx-material3-jvmstubs = { group = "androidx.compose.material3", name = "material3-jvmstubs", version.ref = "material3Jvmstubs" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

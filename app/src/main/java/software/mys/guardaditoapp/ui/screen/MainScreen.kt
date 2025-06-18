@@ -1,10 +1,27 @@
 package software.mys.guardaditoapp.ui.screen
 
 import android.widget.Toast
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.CalendarToday
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -12,7 +29,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -43,6 +63,7 @@ fun MainScreen(
     val mainViewModel: MainViewModel = viewModel()
     val uiState by mainViewModel.uiState.collectAsState()
 
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
 
     //Esto es para la pantalla de formulario de categorías
     var showCategoryForm by remember { mutableStateOf(false) }
@@ -57,9 +78,41 @@ fun MainScreen(
         }, category = selectedCategory)
     }
 
+    var showMonthPicker by remember { mutableStateOf(false) }
+
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .nestedScroll(scrollBehavior.nestedScrollConnection)
+            .fillMaxSize(),
         topBar = {
+            MediumTopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.primary,
+                ),
+                title = {
+                    Text(
+                        if (scrollBehavior.state.collapsedFraction < 0.5f) "Bienvenido" else "Transacciones",
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                },
+                navigationIcon = {
+
+                },
+                actions = {
+                    Button(onClick = {
+                        showMonthPicker = true
+                    }) {
+                        Icon(Icons.Default.CalendarToday, contentDescription = "Menu")
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(text = "Junio 2025")
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Icon(Icons.Default.ExpandMore, contentDescription = "Menu")
+                    }
+                },
+                scrollBehavior = scrollBehavior
+            )
 
         }, floatingActionButton = {
             when (currentDestination?.route) {
@@ -84,7 +137,8 @@ fun MainScreen(
             composable(route = Routes.HomeTab.route) {
                 HomeTab(
                     onAccountClick = onAccountClick,
-                    refreshTrigger = refreshHomeTrigger
+                    refreshTrigger = refreshHomeTrigger,
+                    showMonthPicker = showMonthPicker
                 )
             }
             composable(route = Routes.CategoriesTab.route) {

@@ -22,18 +22,34 @@ import software.mys.guardaditoapp.getDayOfWeekInSpanish
 import software.mys.guardaditoapp.getMonthNameSpanish
 import software.mys.guardaditoapp.ui.models.TransactionTypeUi
 import software.mys.guardaditoapp.ui.models.TransactionUi
+import software.mys.guardaditoapp.ui.screen.components.MonthYearPickerDialog
 import software.mys.guardaditoapp.ui.screen.components.hometab.BalanceCard
 import software.mys.guardaditoapp.ui.screen.components.hometab.DailyReportCard
 import software.mys.guardaditoapp.ui.screen.components.hometab.MounthSummary
+import java.time.Month
 
 @Composable
 fun HomeTab(
     onAccountClick: () -> Unit = {},
-    refreshTrigger: Boolean
+    refreshTrigger: Boolean,
+    showMonthPicker: Boolean = false
 ) {
     val viewModel: HomeTabViewModel = viewModel()
     val uiState by viewModel.uiState.collectAsState()
     var expandedAll by remember { mutableStateOf(false) }
+
+
+   // var showMonthPicker by remember { mutableStateOf(false) }
+    if (showMonthPicker) {
+        var selectedMonth by remember { mutableStateOf(Month.of(uiState.selectedMonth)) }
+        MonthYearPickerDialog(
+            initialYear = uiState.selectedYear,
+            initialMonth = selectedMonth,
+            onDismissRequest = {},
+            onDateSelected = { year, month -> }
+        )
+    }
+
 
     //Lo que hace esta funcion es que si la variable refreshTrigger cambia, se llama a la funcion refreshHomeTab()
     LaunchedEffect(refreshTrigger) {
@@ -42,7 +58,7 @@ fun HomeTab(
 
     Column(
         modifier = Modifier
-            .padding(8.dp)
+            .padding(horizontal = 8.dp)
             .verticalScroll(rememberScrollState()) // Esto añade el scroll vertical
     ) {
         BalanceCard(
