@@ -18,6 +18,7 @@ import software.mys.guardaditoapp.data.local.entities.toUi
 import software.mys.guardaditoapp.data.repositories.AccountRepository
 import software.mys.guardaditoapp.data.repositories.CategoryRepository
 import software.mys.guardaditoapp.data.repositories.TransactionRepository
+import software.mys.guardaditoapp.formatNumberFromDoubleToString
 import software.mys.guardaditoapp.ui.models.AccountUi
 import software.mys.guardaditoapp.ui.models.CategoryUi
 import software.mys.guardaditoapp.ui.models.TransactionTypeUi
@@ -25,15 +26,18 @@ import software.mys.guardaditoapp.ui.models.TransactionUi
 import software.mys.guardaditoapp.ui.models.toEntityModel
 import java.math.BigDecimal
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 
 data class TransactionFormUiState(
     val amount: String = "",
+    val amountBigDecimal: BigDecimal = 0.0.toBigDecimal(),
     val account: AccountUi = AccountUi(),
     val category: CategoryUi = CategoryUi(),
     val detail: String = "",
-    val date: String = "",
+    val date: String = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
     val formValid: Boolean = false,
     val amountError: String? = null,
     val accountError: String? = null,
@@ -73,7 +77,16 @@ class TransactionFormViewModel(application: Application) : AndroidViewModel(appl
     fun updateField(field: String, value: Any?) {
         _uiState.update {
             when (field) {
-                "amount" -> it.copy(amount = value as String, amountError = validateAmount(value))
+                "amountBigDecimal" -> {
+                    it.copy(
+                        amountBigDecimal = value as BigDecimal
+                    )
+                }
+
+                "amount" -> {
+                    it.copy(amount = value as String, amountError = validateAmount(value))
+                }
+
                 "account" -> it.copy(
                     account = value as AccountUi, accountError = validateAccount(
                         value
@@ -160,7 +173,7 @@ class TransactionFormViewModel(application: Application) : AndroidViewModel(appl
         if (uiState.value.formValid) {
             transactionRepository.insertTransaction(
                 TransactionUi(
-                    amount = uiState.value.amount.toBigDecimalOrNull() ?: BigDecimal("0.0"),
+                    amount = uiState.value.amountBigDecimal ?: BigDecimal("0.0"),
                     type = transactionType,
                     accountId = uiState.value.account.id,
                     categoryId = uiState.value.category.id,

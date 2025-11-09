@@ -2,6 +2,9 @@ package software.mys.guardaditoapp.ui.screen
 
 import android.icu.util.Calendar
 import android.widget.Toast
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -14,6 +17,7 @@ import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -29,7 +33,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
@@ -41,6 +47,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import software.mys.guardaditoapp.ui.screen.layout.NavigationBottomAppBar
 import software.mys.guardaditoapp.Routes
+import software.mys.guardaditoapp.getMonthNameSpanish
 import software.mys.guardaditoapp.ui.models.TransactionTypeUi
 import software.mys.guardaditoapp.ui.screen.components.MonthYearPickerDialog
 import software.mys.guardaditoapp.ui.screen.layout.floating_actions_button.CategoryFAB
@@ -86,13 +93,13 @@ fun MainScreen(
     // var showMonthPicker by remember { mutableStateOf(false) }
     if (showMonthPicker) {
         MonthYearPickerDialog(
-            initialYear = Calendar.getInstance().get(Calendar.YEAR),
-            initialMonth = Month.of( Calendar.getInstance().get(Calendar.MONTH) + 1),
+            year = uiState.selectedYear,
+            month = Month.of(uiState.selectedMonth),
             onDismissRequest = {
                 showMonthPicker = false
             },
             onDateSelected = { year, month ->
-                //mainViewModel.updateSelectedDate(month, year)
+                mainViewModel.updateSelectedDate(month.value, year)
                 showMonthPicker = false
             }
         )
@@ -125,7 +132,7 @@ fun MainScreen(
                     }) {
                         Icon(Icons.Default.CalendarToday, contentDescription = "Menu")
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text(text = "Junio 2025")
+                        Text(text = "${getMonthNameSpanish(uiState.selectedMonth)} ${uiState.selectedYear}")
                         Spacer(modifier = Modifier.width(8.dp))
                         Icon(Icons.Default.ExpandMore, contentDescription = "Menu")
                     }
@@ -135,11 +142,17 @@ fun MainScreen(
 
         }, floatingActionButton = {
             when (currentDestination?.route) {
-                Routes.HomeTab.route -> HomeFAB(onClickIncome = {
-                    onTransactionClick(TransactionTypeUi.INCOME)
-                }, onClickExpense = {
-                    onTransactionClick(TransactionTypeUi.EXPENSE)
-                })
+                Routes.HomeTab.route -> {
+                    HomeFAB(onClickIncome = {
+                        onTransactionClick(TransactionTypeUi.INCOME)
+                    }, onClickExpense = {
+                        onTransactionClick(TransactionTypeUi.EXPENSE)
+                    }, onClick = {
+
+                    })
+
+
+                }
 
                 Routes.CategoriesTab.route -> {
                     CategoryFAB(onClickListener = {
@@ -148,6 +161,7 @@ fun MainScreen(
                 }
             }
         }, bottomBar = { NavigationBottomAppBar(navController) }) { innerPadding ->
+
         NavHost(
             navController = navController,
             startDestination = Routes.HomeTab.route,
@@ -157,9 +171,12 @@ fun MainScreen(
                 HomeTab(
                     onAccountClick = onAccountClick,
                     refreshTrigger = refreshHomeTrigger,
-                    showMonthPicker = showMonthPicker
+                    showMonthPicker = showMonthPicker,
+                    selectedMonth = uiState.selectedMonth,
+                    selectedYear = uiState.selectedYear,
                 )
             }
+
             composable(route = Routes.CategoriesTab.route) {
                 mainViewModel.loadAllCategories()
                 CategoriesTab(listCategories = uiState.listCategories, onDeleteCategory = {
@@ -173,6 +190,8 @@ fun MainScreen(
         }
     }
 }
+
+
 
 
 

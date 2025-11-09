@@ -25,6 +25,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -39,9 +42,15 @@ import software.mys.guardaditoapp.ui.screen.components.CategorySelectorDialog
 import software.mys.guardaditoapp.ui.screen.components.DateSelectorDialog
 import software.mys.guardaditoapp.ui.viewmodel.TransactionFormViewModel
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 
 import software.mys.guardaditoapp.ui.screen.layout.topbars.TransactionTopAppBar
 import software.mys.guardaditoapp.R
+import java.math.BigDecimal
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
+import java.util.Locale
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -77,7 +86,6 @@ fun TransactionFormScreen(
                     containerColor = colorResource(id = R.color.green_income),
                     canSave = uiState.formValid,
                     title = "Nuevo Ingreso",
-                    subtitle = "Registra tus ingresos"
                 )
 
                 TransactionTypeUi.EXPENSE -> TransactionTopAppBar(
@@ -97,7 +105,6 @@ fun TransactionFormScreen(
                     containerColor = colorResource(id = R.color.red_expense),
                     canSave = uiState.formValid,
                     title = "Nuevo Gasto",
-                    subtitle = "Registra tus ingresos"
                 )
 
                 TransactionTypeUi.TRANSFER -> {}
@@ -128,33 +135,21 @@ fun TransactionFormScreen(
                         .fillMaxWidth(),
                 ) {
                     Spacer(modifier = Modifier.height(8.dp))
-
-                    // Campo Monto
-                    OutlinedTextField(
-                        value = uiState.amount.toString(),
-                        onValueChange = { it ->
-                            transactionFormViewModel.updateField("amount", it)
-                        },
-                        label = { Text("Monto") },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Default.Savings,
-                                contentDescription = "Monto"
+                    FormattedAmountField(
+                        value = uiState.amountBigDecimal,
+                        onValueChange = { newValue ->
+                            transactionFormViewModel.updateField(
+                                "amountBigDecimal",
+                                newValue
                             )
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp),
-                        supportingText = {
-                            uiState.amountError?.let {
-                                Text(it, color = Color.Red, fontSize = 12.sp)
-                            }
-                        },
-                        isError = !uiState.amountError.isNullOrEmpty(),
-                        keyboardOptions = KeyboardOptions.Default.copy(
-                            keyboardType = KeyboardType.Decimal
-                        )
+                            transactionFormViewModel.updateField(
+                                "amount",
+                                formatCurrencyLive(newValue.toPlainString())
+                            )
+                        }
                     )
+                    // Campo Monto
+
 
 
                     // Campo Account XD
@@ -267,5 +262,87 @@ fun TransactionFormScreen(
                 }
             }
         }
+    }
+}
+
+
+@Composable
+fun FormattedAmountField(
+    value: BigDecimal?,
+    onValueChange: (BigDecimal) -> Unit
+) {
+    var textFieldValue by remember {
+        mutableStateOf(
+            TextFieldValue(
+                formatCurrencyLive(
+                    value?.toPlainString() ?: ""
+                )
+            )
+        )
+    }
+
+    OutlinedTextField(
+        value = textFieldValue,
+        onValueChange = { newTextFieldValue ->
+            val rawInput = newTextFieldValue.text
+            val formatted = formatCurrencyLive(rawInput)
+
+            // Calcula desplazamiento del cursor (mantiene posición natural)
+            val cursorPosition =
+                formatted.length - (rawInput.length - newTextFieldValue.selection.start)
+            val adjustedSelection = TextRange(cursorPosition.coerceIn(0, formatted.length))
+
+            textFieldValue = TextFieldValue(
+                text = formatted,
+                selection = adjustedSelection
+            )
+
+            // Devuelve el BigDecimal limpio
+            onValueChange(parseCurrencyToBigDecimal(formatted))
+        },
+        label = { Text("Monto") },
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Default.Savings,
+                contentDescription = "Monto"
+            )
+        },
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp)
+    )
+}
+
+fun parseCurrencyToBigDecimal(text: String): BigDecimal {
+    return try {
+        // Quitamos todo excepto dígitos y punto decimal
+        val clean = text.replace("[^\\d.]".toRegex(), "")
+        if (clean.isEmpty()) BigDecimal.ZERO else BigDecimal(clean)
+    } catch (e: Exception) {
+        BigDecimal.ZERO
+    }
+}
+
+
+fun formatCurrencyLive(input: String): String {
+    if (input.isBlank()) return ""
+
+    // Quita todo lo que no sea número o punto decimal
+    val clean = input.replace("[^\\d.]".toRegex(), "")
+    if (clean.isBlank()) return ""
+
+    // Si termina con ".", deja que el usuario siga escribiendo
+    if (clean.endsWith(".")) return "$" + clean
+
+    return try {
+        val symbols = DecimalFormatSymbols(Locale("es", "MX")).apply {
+            groupingSeparator = ','
+            decimalSeparator = '.'
+        }
+        val number = clean.toDouble()
+        val formatter = DecimalFormat("$#,###.##", symbols)
+        formatter.format(number)
+    } catch (e: Exception) {
+        "$" + clean
     }
 }

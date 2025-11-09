@@ -42,7 +42,6 @@ fun TransactionTopAppBarPreview() {
         onBackClick = {},
         containerColor = Color(0xFF4CAF50),
         title = "Nuevo Ingreso",
-        subtitle = "Registra tus ingresos",
     )
 }
 
@@ -55,22 +54,17 @@ fun TransactionTopAppBar(
     canSave: Boolean = false,
     containerColor: Color = MaterialTheme.colorScheme.primary,
     title: String,
-    subtitle: String,
 ) {
     TopAppBar(
         title = {
             Column {
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.onPrimary,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
                 )
-                Text(
-                    text = subtitle,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
-                )
+                
             }
         },
         navigationIcon = {
@@ -91,9 +85,9 @@ fun TransactionTopAppBar(
             }
         },
         actions = {
-            // Botón de ayuda
+            /*// Botón de ayuda
             IconButton(
-                onClick = { /* Mostrar ayuda */ },
+                onClick = { *//* Mostrar ayuda *//* },
                 modifier = Modifier
                     .padding(4.dp)
                     .background(
@@ -139,7 +133,7 @@ fun TransactionTopAppBar(
                         fontWeight = FontWeight.SemiBold
                     )
                 }
-            }
+            }*/
         },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = containerColor, // Verde principal para ingresos

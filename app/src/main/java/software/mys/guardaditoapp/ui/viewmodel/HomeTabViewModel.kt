@@ -19,7 +19,11 @@ import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-class HomeTabViewModel(application: Application) : AndroidViewModel(application) {
+class HomeTabViewModel(
+    application: Application,
+    val selectedMonth: Int, // Argumento de Mes
+    val selectedYear: Int // Argumento de Año
+) : AndroidViewModel(application) {
 
     val db = AppDatabase.getInstance(application.applicationContext)
     val stadisticsRepository = StadisticsRepository(db.stadisticsDao())
@@ -28,7 +32,9 @@ class HomeTabViewModel(application: Application) : AndroidViewModel(application)
         HomeTabUiState(
             totalBalance = 0.0,
             totalIncome = 0.0,
-            totalExpense = 0.0
+            totalExpense = 0.0,
+            selectedMonth = selectedMonth,
+            selectedYear = selectedYear
         )
     )
     val uiState: StateFlow<HomeTabUiState> = _uiState.asStateFlow()
@@ -138,6 +144,17 @@ class HomeTabViewModel(application: Application) : AndroidViewModel(application)
             12 -> "Diciembre"
             else -> ""
         }
+    }
+
+    fun updateSelectedMonthAndYear(month: Int, year: Int) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                selectedMonth = month,
+                selectedYear = year
+            )
+        }
+        loadTransactions()
+        loadTotalBalanceIcomeExpense()
     }
 
 }

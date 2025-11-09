@@ -1,6 +1,7 @@
 package software.mys.guardaditoapp.ui.viewmodel
 
 import android.app.Application
+import android.icu.util.Calendar
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,6 +13,7 @@ import software.mys.guardaditoapp.data.local.entities.toCategoryUi
 import software.mys.guardaditoapp.data.repositories.CategoryRepository
 import software.mys.guardaditoapp.ui.models.CategoryUi
 import software.mys.guardaditoapp.ui.models.toEntity
+import java.time.Month
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -41,10 +43,22 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         categoryRepository.deleteCategory(category.toEntity())
     }
 
+    fun updateSelectedDate(
+        month: Int,
+        year: Int
+    ) {
+        _uiState.value = _uiState.value.copy(
+            selectedMonth = month,
+            selectedYear = year
+        )
+    }
+
 
 }
 
 data class MainUiState(
     val listCategories: List<CategoryUi> = emptyList(),
-    val categoryFormUi: CategoryUi = CategoryUi()
+    val categoryFormUi: CategoryUi = CategoryUi(),
+    val selectedMonth: Int = Calendar.getInstance().get(Calendar.MONTH) + 1,
+    val selectedYear: Int = Calendar.getInstance().get(Calendar.YEAR)
 )

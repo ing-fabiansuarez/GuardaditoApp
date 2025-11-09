@@ -1,9 +1,13 @@
 package software.mys.guardaditoapp.ui.screen.layout.floating_actions_button
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AttachMoney
@@ -13,6 +17,7 @@ import androidx.compose.material.icons.filled.SwapHoriz
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -23,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import software.mys.guardaditoapp.R
 
@@ -31,18 +37,35 @@ import software.mys.guardaditoapp.R
 fun HomeFAB(
     onClickTransfer: () -> Unit = {},
     onClickIncome: () -> Unit = {},
-    onClickExpense: () -> Unit = {}
+    onClickExpense: () -> Unit = {},
+    onClick: (Boolean) -> Unit = {},
 ) {
     var expanded by remember { mutableStateOf(false) }
+
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
-        horizontalAlignment = Alignment.End
-    ) {
+        horizontalAlignment = Alignment.End,
+
+        ) {
         if (expanded) {
 
             // --- Botón 3: Transferencia (Azul) ---
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("Transferencia", modifier = Modifier.padding(end = 8.dp))
+                Box(
+                    modifier = Modifier
+                        .background(
+                            color = Color.Black.copy(alpha = 0.3f), // Negro transparente
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                ) {
+                    Text(
+                        "Transferencia",
+                        modifier = Modifier.padding(end = 8.dp),
+                        Color.White,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
                 FloatingActionButton(
                     onClick = onClickTransfer,
                     containerColor = colorResource(id = R.color.blue_transfer)
@@ -56,7 +79,19 @@ fun HomeFAB(
             }
             // --- Botón 1: Ingresos (Verde) ---
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("Ingresos", modifier = Modifier.padding(end = 8.dp))
+                Box(
+                    modifier = Modifier
+                        .background(
+                            color = Color.Black.copy(alpha = 0.3f), // Negro transparente
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                ) {
+                    Text(
+                        "Ingresos", modifier = Modifier.padding(end = 8.dp), Color.White,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
                 FloatingActionButton(
                     onClick = onClickIncome,
                     containerColor = colorResource(id = R.color.green_income)
@@ -71,7 +106,21 @@ fun HomeFAB(
 
             // --- Botón 2: Gastos (Rojo) ---
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("Gastos", modifier = Modifier.padding(end = 8.dp))
+                Box(
+                    modifier = Modifier
+                        .background(
+                            color = Color.Black.copy(alpha = 0.3f), // Negro transparente
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                ) {
+                    Text(
+                        text = "Gastos",
+                        color = Color.White,
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
                 FloatingActionButton(
                     onClick = onClickExpense,
                     containerColor = colorResource(id = R.color.red_expense)
@@ -86,7 +135,10 @@ fun HomeFAB(
         }
 
         ExtendedFloatingActionButton(
-            onClick = { expanded = !expanded },
+            onClick = {
+                expanded = !expanded
+                onClick(expanded)
+            },
             icon = {
                 Icon(
                     if (expanded) Icons.Filled.Close else Icons.Filled.Add,

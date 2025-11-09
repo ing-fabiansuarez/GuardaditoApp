@@ -36,8 +36,8 @@ import java.time.Year
 fun MonthYearPickerDialogPreview() {
     var selectedMonth by remember { mutableStateOf(Month.JANUARY) }
     MonthYearPickerDialog(
-        initialYear = 2023,
-        initialMonth = selectedMonth,
+        year = 2023,
+        month = selectedMonth,
         onDismissRequest = {},
         onDateSelected = { year, month ->
 
@@ -47,13 +47,13 @@ fun MonthYearPickerDialogPreview() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MonthYearPickerDialog(
-    initialYear: Int = Year.now().value,
-    initialMonth: Month = Month.JANUARY,
+    year: Int = Year.now().value,
+    month: Month = Month.JANUARY,
     onDismissRequest: () -> Unit,
     onDateSelected: (year: Int, month: Month) -> Unit
 ) {
-    var selectedYear by remember { mutableStateOf(initialYear) }
-    var selectedMonth by remember { mutableStateOf(initialMonth) }
+    var selectedYear by remember { mutableStateOf(year) }
+    var selectedMonth by remember { mutableStateOf(month) }
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
