@@ -39,16 +39,6 @@ fun HomeTab(
     var expandedAll by remember { mutableStateOf(false) }
 
 
-   // var showMonthPicker by remember { mutableStateOf(false) }
-    if (showMonthPicker) {
-        var selectedMonth by remember { mutableStateOf(Month.of(uiState.selectedMonth)) }
-        MonthYearPickerDialog(
-            initialYear = uiState.selectedYear,
-            initialMonth = selectedMonth,
-            onDismissRequest = {},
-            onDateSelected = { year, month -> }
-        )
-    }
 
 
     //Lo que hace esta funcion es que si la variable refreshTrigger cambia, se llama a la funcion refreshHomeTab()

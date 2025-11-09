@@ -1,5 +1,6 @@
 package software.mys.guardaditoapp.ui.screen
 
+import android.icu.util.Calendar
 import android.widget.Toast
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -41,12 +42,14 @@ import androidx.navigation.compose.rememberNavController
 import software.mys.guardaditoapp.ui.screen.layout.NavigationBottomAppBar
 import software.mys.guardaditoapp.Routes
 import software.mys.guardaditoapp.ui.models.TransactionTypeUi
+import software.mys.guardaditoapp.ui.screen.components.MonthYearPickerDialog
 import software.mys.guardaditoapp.ui.screen.layout.floating_actions_button.CategoryFAB
 import software.mys.guardaditoapp.ui.screen.layout.floating_actions_button.HomeFAB
 import software.mys.guardaditoapp.ui.screen.form.CategoryForm
 import software.mys.guardaditoapp.ui.screen.tabs.CategoriesTab
 import software.mys.guardaditoapp.ui.screen.tabs.HomeTab
 import software.mys.guardaditoapp.ui.viewmodel.MainViewModel
+import java.time.Month
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -79,6 +82,22 @@ fun MainScreen(
     }
 
     var showMonthPicker by remember { mutableStateOf(false) }
+
+    // var showMonthPicker by remember { mutableStateOf(false) }
+    if (showMonthPicker) {
+        MonthYearPickerDialog(
+            initialYear = Calendar.getInstance().get(Calendar.YEAR),
+            initialMonth = Month.of( Calendar.getInstance().get(Calendar.MONTH) + 1),
+            onDismissRequest = {
+                showMonthPicker = false
+            },
+            onDateSelected = { year, month ->
+                //mainViewModel.updateSelectedDate(month, year)
+                showMonthPicker = false
+            }
+        )
+    }
+
 
     Scaffold(
         modifier = Modifier

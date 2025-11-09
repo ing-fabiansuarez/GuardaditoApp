@@ -1,11 +1,14 @@
 package software.mys.guardaditoapp.data.local.daos
 
+import android.accounts.Account
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import androidx.room.Delete
+import androidx.room.OnConflictStrategy
 import software.mys.guardaditoapp.data.local.entities.AccountEntity
+import software.mys.guardaditoapp.data.local.entities.CategoryEntity
 
 
 @Dao
@@ -27,4 +30,7 @@ interface AccountDao {
 
     @Delete
     fun delete(account: AccountEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertAll(accounts: List<AccountEntity>)
 }

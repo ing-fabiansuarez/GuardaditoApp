@@ -1,5 +1,6 @@
 package software.mys.guardaditoapp
 
+import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
@@ -56,4 +57,13 @@ fun getMonthNameSpanish(month: Int): String {
         12 -> "Diciembre"
         else -> ""
     }
+}
+
+fun isFirstTime(context: Context): Boolean {
+    val prefs = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+    val isFirstTime = prefs.getBoolean("is_first_time", true)
+    if (isFirstTime) {
+        prefs.edit().putBoolean("is_first_time", false).apply()
+    }
+    return isFirstTime
 }

@@ -5,6 +5,7 @@ import software.mys.guardaditoapp.data.local.daos.CategoryDao
 import software.mys.guardaditoapp.data.local.entities.CategoryEntity
 import software.mys.guardaditoapp.data.local.entities.CategoryEntityType
 import software.mys.guardaditoapp.data.local.entities.TransactionTypeEntity
+import software.mys.guardaditoapp.data.local.getDefaultCategories
 
 class CategoryRepository(private val categoryDao: CategoryDao) {
 
@@ -34,6 +35,10 @@ class CategoryRepository(private val categoryDao: CategoryDao) {
 
     fun getAllCategoriesList(): List<CategoryEntity> {
         return categoryDao.getAllList()
+    }
+
+    fun insertDefaultCategories() {
+        categoryDao.insertAll(getDefaultCategories())
     }
 
 }
