@@ -10,12 +10,12 @@ data class TransactionWithRelations(
         parentColumn = "accountId",
         entityColumn = "id"
     )
-    val account: AccountEntity,
+    val account: AccountEntity?,
     @Relation(
         parentColumn = "categoryId",
         entityColumn = "id"
     )
-    val category: CategoryEntity
+    val category: CategoryEntity?
 )
 
 fun TransactionWithRelations.toUiTransaction(): TransactionUi {
@@ -28,7 +28,7 @@ fun TransactionWithRelations.toUiTransaction(): TransactionUi {
         description = this.transaction.description,
         date = this.transaction.date,
         targetAccountId = this.transaction.targetAccountId,
-        amountUi = this.account.toUi(),
-        categoryUi = this.category.toCategoryUi()
+        accountUi = this.account?.toUi(),
+        categoryUi = this.category?.toCategoryUi()
     )
 }

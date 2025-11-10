@@ -12,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.NavigateNext
 import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -61,9 +62,14 @@ fun AccountItem(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     IconButton(onClick = {
-                        onClickItem(account)
+
                     }) {
                         Icon(Icons.AutoMirrored.Filled.NavigateNext, contentDescription = null)
+                    }
+                    IconButton(onClick = {
+                        onClickItem(account)
+                    }) {
+                        Icon(Icons.Default.Edit, contentDescription = null)
                     }
                     IconButton(
                         onClick = { onDeleteClick(account) }

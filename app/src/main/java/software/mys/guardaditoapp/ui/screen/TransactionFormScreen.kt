@@ -135,6 +135,8 @@ fun TransactionFormScreen(
                         .fillMaxWidth(),
                 ) {
                     Spacer(modifier = Modifier.height(8.dp))
+
+                    // Campo Monto
                     FormattedAmountField(
                         value = uiState.amountBigDecimal,
                         onValueChange = { newValue ->
@@ -148,8 +150,6 @@ fun TransactionFormScreen(
                             )
                         }
                     )
-                    // Campo Monto
-
 
 
                     // Campo Account XD

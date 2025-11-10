@@ -34,8 +34,8 @@ data class TransactionEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val amount: BigDecimal = BigDecimal("0.0"),
     val type: TransactionTypeEntity,
-    val accountId: Long, // <- ahora nullable
-    val categoryId: Long,
+    val accountId: Long?, // <- ahora nullable
+    val categoryId: Long?,
     val description: String = "",
     val date: String = "",
     val targetAccountId: Long? = null
@@ -46,8 +46,8 @@ fun TransactionEntity.toUiModel(): TransactionUi {
         id = this.id,
         amount = this.amount,
         type = this.type.toUiModel(),
-        accountId = this.accountId,
-        categoryId = this.categoryId,
+        accountId = this.accountId ?: 0,
+        categoryId = this.categoryId ?: 0,
         description = this.description,
         date = this.date,
         targetAccountId = this.targetAccountId

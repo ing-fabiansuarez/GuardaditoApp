@@ -1,8 +1,10 @@
 package software.mys.guardaditoapp.ui.screen.layout
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Assessment
 import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.outlined.Assessment
 import androidx.compose.material.icons.outlined.Category
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material3.Icon
@@ -39,6 +41,12 @@ val items = listOf(
         icon = Icons.Default.Category,
         unSelectedIcon = Icons.Outlined.Category,
         title = Routes.CategoriesTab.route
+    ),
+    BottomNavigationItem(
+        route = Routes.ReportsTab.route,
+        icon = Icons.Default.Assessment,
+        unSelectedIcon = Icons.Outlined.Assessment,
+        title = Routes.ReportsTab.route
     )
 )
 

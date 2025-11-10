@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -16,6 +17,7 @@ import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -62,6 +64,7 @@ import java.time.Month
 @Composable
 fun MainScreen(
     onAccountClick: () -> Unit = {}, onTransactionClick: (TransactionTypeUi) -> Unit = {},
+    onSettingClick: () -> Unit = {},
     refreshHomeTrigger: Boolean
 ) {
 
@@ -125,17 +128,28 @@ fun MainScreen(
                 },
                 navigationIcon = {
 
+
                 },
                 actions = {
-                    Button(onClick = {
-                        showMonthPicker = true
-                    }) {
-                        Icon(Icons.Default.CalendarToday, contentDescription = "Menu")
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(text = "${getMonthNameSpanish(uiState.selectedMonth)} ${uiState.selectedYear}")
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Icon(Icons.Default.ExpandMore, contentDescription = "Menu")
+                    Row() {
+                        Button(onClick = {
+                            showMonthPicker = true
+                        }) {
+                            Icon(Icons.Default.CalendarToday, contentDescription = "Menu")
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(text = "${getMonthNameSpanish(uiState.selectedMonth)} ${uiState.selectedYear}")
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Icon(Icons.Default.ExpandMore, contentDescription = "Menu")
+                        }
+                        IconButton(
+                            onClick = {
+                                onSettingClick()
+                            }
+                        ) {
+                            Icon(Icons.Default.Settings, contentDescription = null)
+                        }
                     }
+
                 },
                 scrollBehavior = scrollBehavior
             )
@@ -176,7 +190,6 @@ fun MainScreen(
                     selectedYear = uiState.selectedYear,
                 )
             }
-
             composable(route = Routes.CategoriesTab.route) {
                 mainViewModel.loadAllCategories()
                 CategoriesTab(listCategories = uiState.listCategories, onDeleteCategory = {
@@ -186,6 +199,9 @@ fun MainScreen(
                     selectedCategory = it
                     showCategoryForm = true
                 })
+            }
+            composable(Routes.ReportsTab.route) {
+                ReportsScreen()
             }
         }
     }

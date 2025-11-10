@@ -79,7 +79,8 @@ class TransactionFormViewModel(application: Application) : AndroidViewModel(appl
             when (field) {
                 "amountBigDecimal" -> {
                     it.copy(
-                        amountBigDecimal = value as BigDecimal
+                        amountBigDecimal = value as BigDecimal,
+                        amountError = validateBigDecimalAmount(value)
                     )
                 }
 
@@ -109,6 +110,13 @@ class TransactionFormViewModel(application: Application) : AndroidViewModel(appl
             }
         }
         validateForm()
+    }
+
+    private fun validateBigDecimalAmount(amount: BigDecimal): String? {
+        return when {
+            amount <= 0.0.toBigDecimal() -> "Amount must be greater than 0"
+            else -> null
+        }
     }
 
     private fun validateAmount(amount: String): String? {
@@ -151,7 +159,7 @@ class TransactionFormViewModel(application: Application) : AndroidViewModel(appl
     private fun validateForm() {
         _uiState.update {
             it.copy(
-                amountError = validateAmount(it.amount),
+                amountError = validateBigDecimalAmount(it.amountBigDecimal),
                 accountError = validateAccount(it.account),
                 categoryError = validateCategory(it.category),
                 detailError = validateDetail(it.detail),

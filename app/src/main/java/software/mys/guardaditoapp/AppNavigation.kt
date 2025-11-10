@@ -1,5 +1,6 @@
 package software.mys.guardaditoapp
 
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -10,9 +11,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import okhttp3.Route
 import software.mys.guardaditoapp.ui.models.TransactionTypeUi
 import software.mys.guardaditoapp.ui.screen.AccountScreen
 import software.mys.guardaditoapp.ui.screen.MainScreen
+import software.mys.guardaditoapp.ui.screen.ReportsScreen
+import software.mys.guardaditoapp.ui.screen.SettingsScreen
 import software.mys.guardaditoapp.ui.screen.TransactionFormScreen
 
 @Composable
@@ -33,6 +37,11 @@ fun AppNavigation() {
                         )
                     )
                 },
+                onSettingClick = {
+
+                    navController.navigate(Routes.Settings.route)
+
+                },
                 refreshHomeTrigger = refreshHomeTrigger,
             )
         }
@@ -41,6 +50,15 @@ fun AppNavigation() {
                 onBackClick = { navController.popBackStack() }
             )
         }
+
+        composable(Routes.Settings.route) {
+            SettingsScreen(
+                onNavigateBack={
+                    navController.popBackStack()
+                }
+            )
+        }
+
         composable(
             Routes.FormTransactions.route,
             arguments = listOf(

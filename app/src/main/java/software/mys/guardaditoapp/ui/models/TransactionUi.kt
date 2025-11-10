@@ -8,13 +8,13 @@ data class TransactionUi(
     val id: Long = 0,
     val amount: BigDecimal = BigDecimal("0.0"),
     val type: TransactionTypeUi = TransactionTypeUi.INCOME, // Enum (INCOME, EXPENSE, TRANSFER)
-    val accountId: Long, // FK to Account
-    val categoryId: Long, // FK to Category (optional for transfers)
+    val accountId: Long?, // FK to Account
+    val categoryId: Long?, // FK to Category (optional for transfers)
     val description: String = "",
     val date: String = "",
     val targetAccountId: Long? = null, // Only for transfers
-    val amountUi: AccountUi = AccountUi(),
-    val categoryUi: CategoryUi = CategoryUi()
+    val accountUi: AccountUi? = null,
+    val categoryUi: CategoryUi? = null
 )
 
 fun TransactionUi.toEntityModel(): TransactionEntity {

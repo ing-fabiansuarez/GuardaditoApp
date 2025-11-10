@@ -7,24 +7,28 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CardElevation
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import software.mys.guardaditoapp.formatNumberFromDoubleToString
+import software.mys.guardaditoapp.ui.models.CategoryUi
+import software.mys.guardaditoapp.ui.models.CategoryUiType
 import software.mys.guardaditoapp.ui.models.TransactionTypeUi
 import software.mys.guardaditoapp.ui.models.TransactionUi
 import java.math.BigDecimal
+import kotlin.Long
 
 @Preview(showBackground = true)
 @Composable
@@ -192,6 +196,16 @@ fun DailyReportCard(
 
 @Composable
 fun TransactionItem(transaction: TransactionUi) {
+    var category = transaction.categoryUi
+    if (category == null) {
+        category = CategoryUi(
+            id = 0,
+            name = "Otra",
+            color = 0xFFCC0000,
+            type = CategoryUiType.INCOME,
+            icon = Icons.Default.Category
+        )
+    }
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -202,18 +216,23 @@ fun TransactionItem(transaction: TransactionUi) {
             modifier = Modifier
                 .size(30.dp)
                 .padding(4.dp)
-                .background(Color(transaction.categoryUi.color), CircleShape)
+                .background(Color(category.color), CircleShape)
         ) {
-            Icon(transaction.categoryUi.icon, null)
+            Icon(category.icon, null)
         }
         Spacer(modifier = Modifier.width(8.dp))
         Column(modifier = Modifier.weight(1f)) {
             val text = ""
 
             Text(
-                "${transaction.categoryUi.name} ${if (!transaction.description.isEmpty()) " * ${transaction.description}" else ""}",
+                "${category.name} ${if (!transaction.description.isEmpty()) " * ${transaction.description}" else ""}",
             )
-            Text(transaction.amountUi.name, fontSize = 12.sp, color = Color.Gray)
+            val accountName = if (transaction.accountUi != null) {
+                transaction.accountUi.name
+            } else {
+                "No tiene Cuenta"
+            }
+            Text(accountName, fontSize = 12.sp, color = Color.Gray)
         }
         Text(
             text = "$ ${formatNumberFromDoubleToString(transaction.amount)}",

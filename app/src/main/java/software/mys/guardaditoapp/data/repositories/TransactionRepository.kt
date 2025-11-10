@@ -14,21 +14,22 @@ class TransactionRepository(
         //LOGINCA DE AGREGAR UNA TRANSACCION
         //La transaccion se realizo y se debe actualizar el account balance.
         transactionDao.insertMovement(transaction)
-        val account = accountDao.getAccountById(transaction.accountId)
-        when (transaction.type) {
-            TransactionTypeEntity.EXPENSE -> {
-                account.balance -= transaction.amount.toDouble()
-            }
+        if (transaction.accountId != null) {
+            val account = accountDao.getAccountById(transaction.accountId)
+            when (transaction.type) {
+                TransactionTypeEntity.EXPENSE -> {
+                    account.balance -= transaction.amount.toDouble()
+                }
 
-            TransactionTypeEntity.INCOME -> {
-                account.balance += transaction.amount.toDouble()
-            }
+                TransactionTypeEntity.INCOME -> {
+                    account.balance += transaction.amount.toDouble()
+                }
 
-            TransactionTypeEntity.TRANSFER -> {
+                TransactionTypeEntity.TRANSFER -> {
 
+                }
             }
+            accountDao.updateBalance(account)
         }
-
-        accountDao.updateBalance(account)
     }
 }
